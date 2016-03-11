@@ -19,15 +19,18 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button btnGet;
-    private Button btnPrev;
     private TextView textView;
     private Context context;
-    MyTask myTask;
+    //MyTask myTask;
     private Quote curQuote;
-    private Quote prevQuote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,30 +38,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         btnGet = (Button) findViewById(R.id.button);
-        btnPrev = (Button) findViewById(R.id.buttonPrev);
         btnGet.setOnClickListener(this);
-        btnPrev.setOnClickListener(this);
 
         textView = (TextView) findViewById(R.id.textView);
 
         context = this;
-
-        if (curQuote == null){
-            getQuote();
-        }else{
-            setQuote(curQuote);
-        }
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.button){
             getQuote();
-        } else if (v.getId() == R.id.buttonPrev) {
-            getPrevQuote();
         }
     }
-/*
+
     public interface ForismaticService {
         @GET("method=getQuote&format=text&lang=ru")
         Call<Quote> getQuote();
@@ -66,30 +59,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://api.forismatic.com/api/1.0/")
+            .addConverterFactory(GsonConverterFactory.create())
             .build();
 
     ForismaticService service = retrofit.create(ForismaticService.class);
-*/
-    private void getQuote(){
-        //Call<Quote> quote = service.getQuote();
-        prevQuote = curQuote;
-        myTask = new MyTask();
-        myTask.execute();
-        //textView.setText(quote.toString());
-    }
 
-    private void getPrevQuote(){
-        if (prevQuote == null){
-            return;
-        }else {
-            setQuote(prevQuote);
-        }
+    private void getQuote(){
+        Call<Quote> quote = service.getQuote();
+        //myTask = new MyTask();
+        //myTask.execute();
+        textView.setText(quote.toString());
     }
 
     private void setQuote(Quote quote){
         textView.setText(quote.toString());
     }
-
+/*
     class MyTask extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -153,5 +138,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }
-    }
+    }*/
 }
