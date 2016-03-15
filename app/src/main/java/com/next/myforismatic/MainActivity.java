@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,8 +19,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
@@ -51,28 +55,70 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             getQuote();
         }
     }
-
+/*
     public interface ForismaticService {
         @GET("method=getQuote&format=text&lang=ru")
         Call<Quote> getQuote();
+    }
+*/
+    public interface ForismaticService {
+        @GET("?method=getQuote&format=json&lang=ru")
+        Call<QuoteP> getQuoteP();
     }
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://api.forismatic.com/api/1.0/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
-
     ForismaticService service = retrofit.create(ForismaticService.class);
 
-    private void getQuote(){
-        Call<Quote> quote = service.getQuote();
-        //myTask = new MyTask();
-        //myTask.execute();
-        textView.setText(quote.toString());
+
+/*
+            .baseUrl("http://api.forismatic.com/api/1.0/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+*/
+    //ForismaticService service = retrofit.create(ForismaticService.class);
+
+    public class QuoteP {
+        public String Text;
+        public String Author;
+        public String Name;
+        public String SenderLink;
+        public String QuoteLink;
+
+        @Override
+        public String toString() {
+            if ((Author == null) || (Author == "")){
+                return Text;
+            }else{
+                return Text + " (" + Author + ")";
+            }
+        }
     }
 
-    private void setQuote(Quote quote){
-        textView.setText(quote.toString());
+    private void getQuote() {
+        Call<QuoteP> callQ = service.getQuoteP();
+        callQ.enqueue(new Callback<QuoteP>() {
+            @Override
+            public void onResponse(Call<QuoteP> call, Response<QuoteP> response) {
+                Toast.makeText(context, response.body().Text, Toast.LENGTH_LONG).show();
+                setQuote(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<QuoteP> call, Throwable t) {
+
+                Toast.makeText(context, "error", Toast.LENGTH_LONG).show();
+            }
+        });
+        //Call<Quote> quote = service.getQuote();
+        //myTask = new MyTask();
+        //myTask.execute();
+    }
+
+    private void setQuote(QuoteP quoteP){
+        textView.setText(quoteP.toString());
     }
 /*
     class MyTask extends AsyncTask<Void, Void, String> {
