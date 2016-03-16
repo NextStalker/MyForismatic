@@ -4,12 +4,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.gson.annotations.SerializedName;
+import com.next.myforismatic.models.Quote;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -47,6 +46,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         context = this;
     }
 
+    @Override
+    protected  void onRestart(){
+        super.onRestart();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private void initRetrofit() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         // set your desired log level
@@ -73,65 +102,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public interface ForismaticService {
 
         @GET("?method=getQuote&format=json&lang=ru")
-        Call<QuoteP> getQuoteP();
-
+        Call<Quote> getQuote();
     }
-
-    public class QuoteP {
-
-        /**
-         * {
-         * "quoteText":"У человека, влюбленного в себя, мало соперников.",
-         * "quoteAuthor":"Георг Лихтенберг",
-         * "senderName":"",
-         * "senderLink":"",
-         * "quoteLink":"http://forismatic.com/ru/4dd7ea9607/"
-         * }
-         **/
-
-        @SerializedName("quoteText")
-        public String text;
-        @SerializedName("quoteAuthor")
-        public String author;
-        @SerializedName("senderName")
-        public String name;
-        @SerializedName("senderLink")
-        public String senderLink;
-        @SerializedName("quoteLink")
-        public String quoteLink;
-
-        public String getText() {
-            return text;
-        }
-
-        public String getAuthor() {
-            return TextUtils.isEmpty(author) ? "Аноним" : author;
-        }
-
-        @Override
-        public String toString() {
-            return "QuoteP{" +
-                    "text='" + text + '\'' +
-                    ", author='" + author + '\'' +
-                    ", name='" + name + '\'' +
-                    ", senderLink='" + senderLink + '\'' +
-                    ", quoteLink='" + quoteLink + '\'' +
-                    '}';
-        }
-
-    }
-
     private void getQuote() {
-        Call<QuoteP> callQ = service.getQuoteP();
-        callQ.enqueue(new Callback<QuoteP>() {
+        Call<Quote> callQ = service.getQuote();
+        callQ.enqueue(new Callback<Quote>() {
             @Override
-            public void onResponse(Call<QuoteP> call, Response<QuoteP> response) {
+            public void onResponse(Call<Quote> call, Response<Quote> response) {
                 Snackbar.make(root, response.body().getText(), Snackbar.LENGTH_LONG).show();
                 setQuote(response.body());
             }
 
             @Override
-            public void onFailure(Call<QuoteP> call, Throwable t) {
+            public void onFailure(Call<Quote> call, Throwable t) {
                 Snackbar.make(root, "Error", Snackbar.LENGTH_LONG).show();
             }
         });
@@ -140,8 +123,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //myTask.execute();
     }
 
-    private void setQuote(QuoteP quoteP) {
-        textView.setText(quoteP.getText() + "\n( " + quoteP.getAuthor() + " )");
+    private void setQuote(Quote quote) {
+        textView.setText(quote.getText() + "\n( " + quote.getAuthor() + " )");
     }
 /*
     class MyTask extends AsyncTask<Void, Void, String> {
