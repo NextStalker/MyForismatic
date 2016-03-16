@@ -1,26 +1,18 @@
 package com.next.myforismatic;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,11 +27,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Context context;
     //MyTask myTask;
     private Quote curQuote;
+    private ForismaticService service;
+
+    private View root;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initRetrofit();
         setContentView(R.layout.activity_main);
+
+        root = findViewById(R.id.activity_main_root);
 
         btnGet = (Button) findViewById(R.id.button);
         btnGet.setOnClickListener(this);
@@ -49,52 +47,78 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         context = this;
     }
 
+    private void initRetrofit() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        // set your desired log level
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
+        // add your other interceptors …
+        // add logging as last interceptor
+        httpClientBuilder.addInterceptor(logging);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://api.forismatic.com/api/1.0/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClientBuilder.build())
+                .build();
+        service = retrofit.create(ForismaticService.class);
+    }
+
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.button){
+        if (v.getId() == R.id.button) {
             getQuote();
         }
     }
-/*
+
     public interface ForismaticService {
-        @GET("method=getQuote&format=text&lang=ru")
-        Call<Quote> getQuote();
-    }
-*/
-    public interface ForismaticService {
+
         @GET("?method=getQuote&format=json&lang=ru")
         Call<QuoteP> getQuoteP();
+
     }
 
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://api.forismatic.com/api/1.0/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-    ForismaticService service = retrofit.create(ForismaticService.class);
-
-
-/*
-            .baseUrl("http://api.forismatic.com/api/1.0/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-*/
-    //ForismaticService service = retrofit.create(ForismaticService.class);
-
     public class QuoteP {
-        public String Text;
-        public String Author;
-        public String Name;
-        public String SenderLink;
-        public String QuoteLink;
+
+        /**
+         * {
+         * "quoteText":"У человека, влюбленного в себя, мало соперников.",
+         * "quoteAuthor":"Георг Лихтенберг",
+         * "senderName":"",
+         * "senderLink":"",
+         * "quoteLink":"http://forismatic.com/ru/4dd7ea9607/"
+         * }
+         **/
+
+        @SerializedName("quoteText")
+        public String text;
+        @SerializedName("quoteAuthor")
+        public String author;
+        @SerializedName("senderName")
+        public String name;
+        @SerializedName("senderLink")
+        public String senderLink;
+        @SerializedName("quoteLink")
+        public String quoteLink;
+
+        public String getText() {
+            return text;
+        }
+
+        public String getAuthor() {
+            return TextUtils.isEmpty(author) ? "Аноним" : author;
+        }
 
         @Override
         public String toString() {
-            if ((Author == null) || (Author == "")){
-                return Text;
-            }else{
-                return Text + " (" + Author + ")";
-            }
+            return "QuoteP{" +
+                    "text='" + text + '\'' +
+                    ", author='" + author + '\'' +
+                    ", name='" + name + '\'' +
+                    ", senderLink='" + senderLink + '\'' +
+                    ", quoteLink='" + quoteLink + '\'' +
+                    '}';
         }
+
     }
 
     private void getQuote() {
@@ -102,14 +126,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         callQ.enqueue(new Callback<QuoteP>() {
             @Override
             public void onResponse(Call<QuoteP> call, Response<QuoteP> response) {
-                Toast.makeText(context, response.body().Text, Toast.LENGTH_LONG).show();
+                Snackbar.make(root, response.body().getText(), Snackbar.LENGTH_LONG).show();
                 setQuote(response.body());
             }
 
             @Override
             public void onFailure(Call<QuoteP> call, Throwable t) {
-
-                Toast.makeText(context, "error", Toast.LENGTH_LONG).show();
+                Snackbar.make(root, "Error", Snackbar.LENGTH_LONG).show();
             }
         });
         //Call<Quote> quote = service.getQuote();
@@ -117,8 +140,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //myTask.execute();
     }
 
-    private void setQuote(QuoteP quoteP){
-        textView.setText(quoteP.toString());
+    private void setQuote(QuoteP quoteP) {
+        textView.setText(quoteP.getText() + "\n( " + quoteP.getAuthor() + " )");
     }
 /*
     class MyTask extends AsyncTask<Void, Void, String> {
