@@ -19,6 +19,13 @@ public class Quote {
     @SerializedName("quoteLink")
     public String quoteLink;
 
+    public Quote(){}
+
+    public Quote(String text, String author){
+        this.text = text;
+        this.author = author;
+    }
+
     public String getText() {
         return text;
     }

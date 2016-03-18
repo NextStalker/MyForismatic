@@ -4,11 +4,15 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
+import com.next.myforismatic.adapters.QuoteListAdapter;
 import com.next.myforismatic.models.Quote;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -19,14 +23,16 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
-    private Button btnGet;
-    private TextView textView;
     private Context context;
     //MyTask myTask;
     private Quote curQuote;
     private ForismaticService service;
+
+    private List<Quote> quotes;
+
+    private RecyclerView recyclerView;
 
     private View root;
 
@@ -35,45 +41,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         initRetrofit();
         setContentView(R.layout.activity_main);
-
         root = findViewById(R.id.activity_main_root);
 
-        btnGet = (Button) findViewById(R.id.button);
-        btnGet.setOnClickListener(this);
-
-        textView = (TextView) findViewById(R.id.textView);
-
         context = this;
+
+        initializeData();
+
+        recyclerView = (RecyclerView) findViewById(R.id.rv);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        QuoteListAdapter quoteListAdapter = new QuoteListAdapter(quotes);
+        recyclerView.setAdapter(quoteListAdapter);
+        recyclerView.setHasFixedSize(true);
     }
 
-    @Override
-    protected  void onRestart(){
-        super.onRestart();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    private void initializeData(){
+        quotes = new ArrayList<>();
+        quotes.add(new Quote("цитата 1", "автор 1"));
+        quotes.add(new Quote("цитата 2", "автор 2"));
+        quotes.add(new Quote("цитата 3", "автор 3"));
     }
 
     private void initRetrofit() {
@@ -92,13 +80,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         service = retrofit.create(ForismaticService.class);
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.button) {
-            getQuote();
-        }
-    }
-
     public interface ForismaticService {
 
         @GET("?method=getQuote&format=json&lang=ru")
@@ -110,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onResponse(Call<Quote> call, Response<Quote> response) {
                 Snackbar.make(root, response.body().getText(), Snackbar.LENGTH_LONG).show();
-                setQuote(response.body());
             }
 
             @Override
@@ -121,10 +101,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Call<Quote> quote = service.getQuote();
         //myTask = new MyTask();
         //myTask.execute();
-    }
-
-    private void setQuote(Quote quote) {
-        textView.setText(quote.getText() + "\n( " + quote.getAuthor() + " )");
     }
 /*
     class MyTask extends AsyncTask<Void, Void, String> {
