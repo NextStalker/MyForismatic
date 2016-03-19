@@ -19,13 +19,13 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
     private List<Quote> quotes;
 
     public static class ViewHolder extends  RecyclerView.ViewHolder{
-        private CardView cv;
+        //private CardView cv;
         private TextView quote;
         private TextView author;
 
         public ViewHolder(View view){
             super(view);
-            cv = (CardView) view.findViewById(R.id.cv);
+            //cv = (CardView) view.findViewById(R.id.cv);
             quote = (TextView) itemView.findViewById(R.id.quote);
             author = (TextView) itemView.findViewById(R.id.author);
         }

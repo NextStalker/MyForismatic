@@ -26,6 +26,14 @@ public class Quote {
         this.author = author;
     }
 
+    public Quote(String text, String author, String name, String senderLink, String quoteLink){
+        this.text = text;
+        this.author = author;
+        this.name = name;
+        this.senderLink = senderLink;
+        this.quoteLink = quoteLink;
+    }
+
     public String getText() {
         return text;
     }

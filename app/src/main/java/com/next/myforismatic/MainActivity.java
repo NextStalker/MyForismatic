@@ -1,6 +1,7 @@
 package com.next.myforismatic;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,15 @@ import android.view.View;
 import com.next.myforismatic.adapters.QuoteListAdapter;
 import com.next.myforismatic.models.Quote;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +32,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public class MainActivity extends AppCompatActivity {
 
     private Context context;
-    //MyTask myTask;
+    MyTask myTask;
     private Quote curQuote;
     private ForismaticService service;
 
@@ -51,17 +62,13 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
-
-        QuoteListAdapter quoteListAdapter = new QuoteListAdapter(quotes);
-        recyclerView.setAdapter(quoteListAdapter);
-        recyclerView.setHasFixedSize(true);
     }
 
     private void initializeData(){
         quotes = new ArrayList<>();
-        quotes.add(new Quote("цитата 1", "автор 1"));
-        quotes.add(new Quote("цитата 2", "автор 2"));
-        quotes.add(new Quote("цитата 3", "автор 3"));
+
+        myTask = new MyTask();
+        myTask.execute();
     }
 
     private void initRetrofit() {
@@ -81,90 +88,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public interface ForismaticService {
-
-        @GET("?method=getQuote&format=json&lang=ru")
-        Call<Quote> getQuote();
+        @GET("?method=getQuote&format=json&lang=ru&key={id}")
+        Call<Quote> getQuote(@Path("id") int myKey);
     }
-    private void getQuote() {
-        Call<Quote> callQ = service.getQuote();
-        callQ.enqueue(new Callback<Quote>() {
-            @Override
-            public void onResponse(Call<Quote> call, Response<Quote> response) {
-                Snackbar.make(root, response.body().getText(), Snackbar.LENGTH_LONG).show();
-            }
 
-            @Override
-            public void onFailure(Call<Quote> call, Throwable t) {
-                Snackbar.make(root, "Error", Snackbar.LENGTH_LONG).show();
-            }
-        });
-        //Call<Quote> quote = service.getQuote();
-        //myTask = new MyTask();
-        //myTask.execute();
-    }
-/*
-    class MyTask extends AsyncTask<Void, Void, String> {
+    class MyTask extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected String doInBackground(Void... params) {
-            return getQuote();
+        protected Void doInBackground(Void... params) {
+            getQuotes();
+            return null;
         }
 
-        public String getQuote() {
-            URL url = null;
+        private synchronized void getQuotes() {
             try {
-                url = new URL("http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=ru");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
+                for(int i = 0; i < 10; i++){
+                    Call<Quote> callQ = service.getQuote(i);
+                    Quote quote = callQ.execute().body();
+                    addQuote(quote);
+                    //Call<Quote> callQNew = callQ.clone();
+                    //Quote quote2 = callQNew.execute().body();
 
-            HttpURLConnection con = null;
-            try {
-                con = (HttpURLConnection) url.openConnection();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            InputStreamReader inputStreamReader = null;
-            try {
-                inputStreamReader = new InputStreamReader(con.getInputStream());
-            } catch (IOException e) {
-                return null;
-            }
-
-            BufferedReader reader = new BufferedReader(inputStreamReader);
-            String quote = null;
-            try {
-                quote = reader.readLine();
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return quote;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            if (result == null) {
-                Toast.makeText(context, "Нет соединения с интернетом", Toast.LENGTH_LONG).show();
-            } else {
-                JSONObject dataJsonObj = null;
-                try{
-                    dataJsonObj = new JSONObject(result);
-                    String quoteText = dataJsonObj.getString("quoteText");
-                    String quoteAuthor = dataJsonObj.getString("quoteAuthor");
-                    String senderName = dataJsonObj.getString("senderName");
-                    String senderLink = dataJsonObj.getString("senderLink");
-                    String quoteLink = dataJsonObj.getString("quoteLink");
-
-                    curQuote = new Quote(quoteText, quoteAuthor, senderName, senderLink, quoteLink);
-
-                    setQuote(curQuote);
-                } catch (JSONException e){
-                    e.printStackTrace();
+                    //addQuote(quote2);
                 }
+            } catch (IOException e) {
+
             }
         }
-    }*/
+
+        private void addQuote(Quote quote){
+            quotes.add(quote);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            QuoteListAdapter quoteListAdapter = new QuoteListAdapter(quotes);
+            recyclerView.setAdapter(quoteListAdapter);
+            recyclerView.setHasFixedSize(true);
+        }
+    }
 }
