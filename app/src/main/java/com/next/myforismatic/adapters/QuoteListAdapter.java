@@ -45,7 +45,7 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item, viewGroup, false));
+        return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_qoute_item, viewGroup, false));
     }
 
     @Override
