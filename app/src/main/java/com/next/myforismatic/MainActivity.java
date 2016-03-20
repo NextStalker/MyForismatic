@@ -1,72 +1,52 @@
 package com.next.myforismatic;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.next.myforismatic.adapters.QuoteListAdapter;
 import com.next.myforismatic.models.Quote;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
-import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Context context;
-    MyTask myTask;
-    private Quote curQuote;
+    private MyTask myTask;
     private ForismaticService service;
 
-    private List<Quote> quotes;
-
     private RecyclerView recyclerView;
-
-    private View root;
+    private QuoteListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initRetrofit();
         setContentView(R.layout.activity_main);
-        root = findViewById(R.id.activity_main_root);
-
-        context = this;
 
         initializeData();
 
         recyclerView = (RecyclerView) findViewById(R.id.rv);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new QuoteListAdapter();
+        recyclerView.setAdapter(adapter);
+
     }
 
-    private void initializeData(){
-        quotes = new ArrayList<>();
-
+    private void initializeData() {
         myTask = new MyTask();
         myTask.execute();
     }
@@ -80,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         // add logging as last interceptor
         httpClientBuilder.addInterceptor(logging);
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://api.forismatic.com/api/1.0/")
+                .baseUrl("http://api.forismatic.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClientBuilder.build())
                 .build();
@@ -88,43 +68,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public interface ForismaticService {
-        @GET("?method=getQuote&format=json&lang=ru&key={id}")
-        Call<Quote> getQuote(@Path("id") int myKey);
+
+        @GET("api/1.0/")
+        Call<Quote> getQuote(
+                @Query("method") String method,
+                @Query("format") String format,
+                @Query("lang") String lang,
+                @Query("key") int key
+        );
     }
 
-    class MyTask extends AsyncTask<Void, Void, Void> {
+    public Call<Quote> getQuote(int key) {
+        return service.getQuote("getQuote", "json", "ru", key);
+    }
+
+    class MyTask extends AsyncTask<Void, Void, List<Quote>> {
 
         @Override
-        protected Void doInBackground(Void... params) {
-            getQuotes();
-            return null;
+        protected List<Quote> doInBackground(Void... params) {
+            return getQuotes();
         }
 
-        private synchronized void getQuotes() {
+        @NonNull
+        private List<Quote> getQuotes() {
+            int size = 10;
+            List<Quote> quotes = new ArrayList<>(size);
             try {
-                for(int i = 0; i < 10; i++){
-                    Call<Quote> callQ = service.getQuote(i);
+                for (int i = 0; i < size; i++) {
+                    Call<Quote> callQ = getQuote(i);
                     Quote quote = callQ.execute().body();
-                    addQuote(quote);
-                    //Call<Quote> callQNew = callQ.clone();
-                    //Quote quote2 = callQNew.execute().body();
-
-                    //addQuote(quote2);
+                    quotes.add(quote);
                 }
-            } catch (IOException e) {
-
+            } catch (IOException ignored) {
+                //not supported
             }
-        }
-
-        private void addQuote(Quote quote){
-            quotes.add(quote);
+            return quotes;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            QuoteListAdapter quoteListAdapter = new QuoteListAdapter(quotes);
-            recyclerView.setAdapter(quoteListAdapter);
-            recyclerView.setHasFixedSize(true);
+        protected void onPostExecute(List<Quote> quotes) {
+            adapter.setQuotes(quotes);
         }
     }
+
 }
