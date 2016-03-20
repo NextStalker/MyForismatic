@@ -61,6 +61,20 @@ public class QuoteListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // TODO: 21.03.16
+        //DB -> ContentProvider
+        //if (DB) quotes == 0 {
+        //load from web
+        // (AsyncTaskLoader)
+        // } else {
+        // load from DB
+        // (CursorLoader)
+        // }
+    }
+
     private void initializeData() {
         myTask = new MyTask();
         myTask.execute();
