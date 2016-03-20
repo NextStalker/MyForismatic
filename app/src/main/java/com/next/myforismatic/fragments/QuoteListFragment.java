@@ -101,7 +101,9 @@ public class QuoteListFragment extends Fragment {
 
         @Override
         protected List<Quote> doInBackground(Void... params) {
-            return getQuotes();
+            List<Quote> quotes = getQuotes();
+            //insert to DB
+            return quotes;
         }
 
         @NonNull
