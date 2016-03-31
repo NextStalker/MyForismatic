@@ -1,5 +1,7 @@
 package com.next.myforismatic.fragments;
 
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +16,7 @@ import android.view.ViewGroup;
 import com.next.myforismatic.R;
 import com.next.myforismatic.adapters.QuoteListAdapter;
 import com.next.myforismatic.models.Quote;
+import com.next.myforismatic.providers.QuoteContentProvider;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +40,14 @@ public class QuoteListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
+
+    final Uri QUOTE_URI = Uri.parse("content://com.next.myforismatic.providers/quotes");
+
+    final String QUOTE_TEXT = "text";
+    final String QUOTE_AUTHOR = "author";
+    final String QUOTE_NAME = "name";
+    final String QUOTE_SENDER_LINK = "senderLink";
+    final String QUOTE_QUOTE_LINK = "quoteLink";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +75,16 @@ public class QuoteListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        QuoteContentProvider quotesContentProvider = new QuoteContentProvider();
+        Cursor cursor = quotesContentProvider.query(QUOTE_URI, null, null, null, null);
+
+        if (cursor.getCount() == 0) {
+            //load from web
+        } else {
+            //load from db
+        }
+
         // TODO: 21.03.16
         //DB -> ContentProvider
         //if (DB) quotes == 0 {
