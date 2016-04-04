@@ -1,5 +1,10 @@
 package com.next.myforismatic.fragments;
 
+import android.app.LoaderManager;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -7,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +21,7 @@ import android.view.ViewGroup;
 
 import com.next.myforismatic.R;
 import com.next.myforismatic.adapters.QuoteListAdapter;
+import com.next.myforismatic.common.CursorParse;
 import com.next.myforismatic.models.Quote;
 import com.next.myforismatic.providers.QuoteContentProvider;
 
@@ -33,7 +40,7 @@ import retrofit2.http.Query;
 /**
  * @author Konstantin Abramov on 20.03.16.
  */
-public class QuoteListFragment extends Fragment {
+public class QuoteListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private MyTask myTask;
     private ForismaticService service;
@@ -49,11 +56,11 @@ public class QuoteListFragment extends Fragment {
     final String QUOTE_SENDER_LINK = "senderLink";
     final String QUOTE_QUOTE_LINK = "quoteLink";
 
+    QuoteContentProvider quoteContentProvider;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initRetrofit();
-        initializeData();
     }
 
     @Nullable
@@ -76,14 +83,10 @@ public class QuoteListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        QuoteContentProvider quotesContentProvider = new QuoteContentProvider();
-        Cursor cursor = quotesContentProvider.query(QUOTE_URI, null, null, null, null);
+        quoteContentProvider = new QuoteContentProvider();
 
-        if (cursor.getCount() == 0) {
-            //load from web
-        } else {
-            //load from db
-        }
+        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().getLoader(0).forceLoad();
 
         // TODO: 21.03.16
         //DB -> ContentProvider
@@ -96,7 +99,7 @@ public class QuoteListFragment extends Fragment {
         // }
     }
 
-    private void initializeData() {
+    private void getQuotesFromInternet() {
         myTask = new MyTask();
         myTask.execute();
     }
@@ -115,6 +118,28 @@ public class QuoteListFragment extends Fragment {
                 .client(httpClientBuilder.build())
                 .build();
         service = retrofit.create(ForismaticService.class);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new MyCursorLoader(getContext(), quoteContentProvider, QUOTE_URI);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        List<Quote> list = CursorParse.parseQuotes(data);
+
+        if (list.size() == 0) {
+            initRetrofit();
+            getQuotesFromInternet();
+        } else {
+            adapter.setQuotes(list);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 
     public interface ForismaticService {
@@ -137,7 +162,17 @@ public class QuoteListFragment extends Fragment {
         @Override
         protected List<Quote> doInBackground(Void... params) {
             List<Quote> quotes = getQuotes();
-            //insert to DB
+
+            for (Quote quote: quotes) {
+                ContentValues cv = new ContentValues();
+                cv.put("text", quote.getText());
+                cv.put("author", quote.getAuthor());
+                cv.put("name", quote.getName());
+                cv.put("senderLink", quote.getSenderLink());
+                cv.put("quoteLink", quote.getQuoteLink());
+                quoteContentProvider.insert(QuoteContentProvider.QUOTE_CONTENT_URI, cv);
+            }
+
             return quotes;
         }
 
@@ -163,4 +198,24 @@ public class QuoteListFragment extends Fragment {
         }
     }
 
+    static class MyCursorLoader extends CursorLoader {
+
+        QuoteContentProvider quoteContentProvider;
+        Uri uri;
+
+        public MyCursorLoader(Context context, QuoteContentProvider quoteContentProvider, Uri uri) {
+            super(context);
+
+            this.uri = uri;
+            this.quoteContentProvider = quoteContentProvider;
+        }
+
+        @Override
+        public Cursor loadInBackground() {
+            Cursor cursor = quoteContentProvider.query(uri, null, null, null, null);
+
+            return cursor;
+        }
+
+    }
 }

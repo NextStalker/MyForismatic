@@ -34,13 +34,15 @@ public class Quote {
         this.quoteLink = quoteLink;
     }
 
-    public String getText() {
-        return text;
-    }
+    public String getText() { return text; }
 
-    public String getAuthor() {
-        return TextUtils.isEmpty(author) ? "Аноним" : author;
-    }
+    public String getAuthor() { return TextUtils.isEmpty(author) ? "Аноним" : author; }
+
+    public String getName() { return name; }
+
+    public String getSenderLink() {return senderLink; }
+
+    public String getQuoteLink() { return quoteLink; }
 
     @Override
     public String toString() {
