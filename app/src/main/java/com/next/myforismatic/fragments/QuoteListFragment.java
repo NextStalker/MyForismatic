@@ -47,14 +47,6 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
 
-    final String QUOTE_TEXT = "text";
-    final String QUOTE_AUTHOR = "author";
-    final String QUOTE_NAME = "name";
-    final String QUOTE_SENDER_LINK = "senderLink";
-    final String QUOTE_QUOTE_LINK = "quoteLink";
-
-    QuoteContentProvider quoteContentProvider;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
