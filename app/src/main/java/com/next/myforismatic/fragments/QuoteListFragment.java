@@ -41,16 +41,10 @@ import retrofit2.http.Query;
  */
 public class QuoteListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private MyTask myTask;
     private ForismaticService service;
 
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Nullable
     @Override
@@ -71,33 +65,22 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        getQuotes();
+    }
 
+    private void getQuotes() {
         getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this);
         getActivity().getSupportLoaderManager().getLoader(R.id.quote_cursor_loader).forceLoad();
-
-        // TODO: 21.03.16
-        //DB -> ContentProvider
-        //if (DB) quotes == 0 {
-        //load from web
-        // (AsyncTaskLoader)
-        // } else {
-        // load from DB
-        // (CursorLoader)
-        // }
     }
 
     private void getQuotesFromInternet() {
-        myTask = new MyTask();
-        myTask.execute();
+        new MyTask().execute();
     }
 
     private void initRetrofit() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        // set your desired log level
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
-        // add your other interceptors …
-        // add logging as last interceptor
         httpClientBuilder.addInterceptor(logging);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://api.forismatic.com/")
@@ -148,7 +131,7 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
         return service.getQuote("getQuote", "json", "ru", key);
     }
 
-    class MyTask extends AsyncTask<Void, Void, List<Quote>> {
+    private class MyTask extends AsyncTask<Void, Void, List<Quote>> {
 
         @Override
         protected List<Quote> doInBackground(Void... params) {
@@ -201,9 +184,7 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
 
         @Override
         public Cursor loadInBackground() {
-            Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
-
-            return cursor;
+            return getContext().getContentResolver().query(uri, null, null, null, null);
         }
 
     }
