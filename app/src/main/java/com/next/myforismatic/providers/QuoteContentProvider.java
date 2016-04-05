@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -17,47 +18,48 @@ import android.text.TextUtils;
  */
 public class QuoteContentProvider extends ContentProvider {
 
-    static final String DB_NAME = "myDB";
-    static final String QUOTE_TABLE = "quotes";
+    private static final String DB_NAME = "myDB";
+    private static final String QUOTE_TABLE = "quotes";
 
-    static final String QUOTE_ID = "_id";
-    static final String QUOTE_TEXT = "text";
-    static final String QUOTE_AUTHOR = "author";
-    static final String QUOTE_NAME = "name";
-    static final String QUOTE_SENDER_LINK = "senderLink";
-    static final String QUOTE_QUOTE_LINK = "quoteLink";
+    private static final String QUOTE_ID = "_id";
+    private static final String QUOTE_TEXT = "text";
+    private static final String QUOTE_AUTHOR = "author";
+    private static final String QUOTE_NAME = "name";
+    private static final String QUOTE_SENDER_LINK = "senderLink";
+    private static final String QUOTE_QUOTE_LINK = "quoteLink";
 
-    static final String DB_CREATE = "CREATE TABLE " + QUOTE_TABLE + " (" + QUOTE_ID +
+    private static final String DB_CREATE = "CREATE TABLE " + QUOTE_TABLE + " (" + QUOTE_ID +
             " integer primary key autoincrement, " +
             QUOTE_TEXT + " text, " + QUOTE_AUTHOR + " text, " +
             QUOTE_NAME + " text, " + QUOTE_SENDER_LINK + " text, " +
             QUOTE_QUOTE_LINK + " text" + ")";
 
-    static final String AUTHORITY = "com.next.myforismatic.providers";
+    private static final String AUTHORITY = "com.next.myforismatic.providers";
 
-    static final String QUOTE_PATH = "quotes";
+    private static final String QUOTE_PATH = "quotes";
 
     public static final Uri QUOTE_CONTENT_URI = Uri.parse("content://"
             + AUTHORITY + "/" + QUOTE_PATH);
 
-    static final String QUOTE_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."
+    private static final String QUOTE_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."
             + AUTHORITY + "." + QUOTE_PATH;
 
-    static final String QUOTE_CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd."
+    private static final String QUOTE_CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd."
             + AUTHORITY + "." + QUOTE_PATH;
 
-    static final int URI_QUOTES = 1;
-    static final int URI_QUOTES_ID = 2;
+    private static final int URI_QUOTES = 1;
+    private static final int URI_QUOTES_ID = 2;
 
     private static final UriMatcher uriMatcher;
+
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(AUTHORITY, QUOTE_PATH, URI_QUOTES);
         uriMatcher.addURI(AUTHORITY, QUOTE_PATH + "/#", URI_QUOTES_ID);
     }
 
-    DBHelper dbHelper;
-    SQLiteDatabase db;
+    private DBHelper dbHelper;
+    private SQLiteDatabase db;
 
     @Override
     public boolean onCreate() {
@@ -67,7 +69,7 @@ public class QuoteContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         switch (uriMatcher.match(uri)) {
             case URI_QUOTES:
@@ -80,8 +82,8 @@ public class QuoteContentProvider extends ContentProvider {
                 } else {
                     selection += " AND " + QUOTE_ID + " = " + id;
                 }
-                default:
-                    throw new IllegalArgumentException("Wrong uri: " + uri);
+            default:
+                throw new IllegalArgumentException("Wrong uri: " + uri);
         }
 
         db = dbHelper.getWritableDatabase();
@@ -93,7 +95,7 @@ public class QuoteContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
 
         switch (uriMatcher.match(uri)) {
             case URI_QUOTES:
@@ -106,7 +108,7 @@ public class QuoteContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
 
         if (uriMatcher.match(uri) != URI_QUOTES) {
             throw new IllegalArgumentException("Wrong uri: " + uri);
@@ -121,9 +123,9 @@ public class QuoteContentProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
 
-        switch (uriMatcher.match(uri)){
+        switch (uriMatcher.match(uri)) {
             case URI_QUOTES:
                 break;
             case URI_QUOTES_ID:
@@ -146,7 +148,7 @@ public class QuoteContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 
         switch (uriMatcher.match(uri)) {
             case URI_QUOTES:
@@ -171,7 +173,7 @@ public class QuoteContentProvider extends ContentProvider {
         return cnt;
     }
 
-    class DBHelper extends SQLiteOpenHelper{
+    private class DBHelper extends SQLiteOpenHelper {
 
         public DBHelper(Context context) {
             super(context, DB_NAME, null, 1);
@@ -187,4 +189,5 @@ public class QuoteContentProvider extends ContentProvider {
 
         }
     }
+
 }

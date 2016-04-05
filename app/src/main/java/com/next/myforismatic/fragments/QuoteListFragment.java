@@ -1,10 +1,7 @@
 package com.next.myforismatic.fragments;
 
-import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -12,7 +9,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -85,8 +84,8 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
 
         quoteContentProvider = new QuoteContentProvider();
 
-        getLoaderManager().initLoader(0, null, this);
-        getLoaderManager().getLoader(0).forceLoad();
+        getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this);
+        getActivity().getSupportLoaderManager().getLoader(R.id.quote_cursor_loader).forceLoad();
 
         // TODO: 21.03.16
         //DB -> ContentProvider
@@ -122,7 +121,10 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new MyCursorLoader(getContext(), quoteContentProvider, QUOTE_URI);
+        if (id == R.id.quote_cursor_loader) {
+            return new MyCursorLoader(getContext(), quoteContentProvider, QUOTE_URI);
+        }
+        return null;
     }
 
     @Override
@@ -138,7 +140,7 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
 
     }
 
@@ -151,6 +153,7 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
                 @Query("lang") String lang,
                 @Query("key") int key
         );
+
     }
 
     public Call<Quote> getQuote(int key) {
@@ -163,7 +166,7 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
         protected List<Quote> doInBackground(Void... params) {
             List<Quote> quotes = getQuotes();
 
-            for (Quote quote: quotes) {
+            for (Quote quote : quotes) {
                 ContentValues cv = new ContentValues();
                 cv.put("text", quote.getText());
                 cv.put("author", quote.getAuthor());
@@ -198,7 +201,7 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
         }
     }
 
-    static class MyCursorLoader extends CursorLoader {
+    private static class MyCursorLoader extends CursorLoader {
 
         QuoteContentProvider quoteContentProvider;
         Uri uri;
@@ -218,4 +221,5 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
         }
 
     }
+
 }
