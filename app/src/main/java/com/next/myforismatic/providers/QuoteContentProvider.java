@@ -13,12 +13,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.next.myforismatic.BuildConfig;
+
 /**
  * Created by Next on 31.03.2016.
  */
 public class QuoteContentProvider extends ContentProvider {
 
-    private static final String DB_NAME = "myDB";
+    private static final String DB_NAME = "quotes.db";
     private static final String QUOTE_TABLE = "quotes";
 
     private static final String QUOTE_ID = "_id";
@@ -34,7 +36,7 @@ public class QuoteContentProvider extends ContentProvider {
             QUOTE_NAME + " text, " + QUOTE_SENDER_LINK + " text, " +
             QUOTE_QUOTE_LINK + " text" + ")";
 
-    private static final String AUTHORITY = "com.next.myforismatic.providers";
+    private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".contentprovider";
 
     private static final String QUOTE_PATH = "quotes";
 
@@ -188,6 +190,7 @@ public class QuoteContentProvider extends ContentProvider {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         }
+
     }
 
 }

@@ -47,8 +47,6 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
 
-    final Uri QUOTE_URI = Uri.parse("content://com.next.myforismatic.providers/quotes");
-
     final String QUOTE_TEXT = "text";
     final String QUOTE_AUTHOR = "author";
     final String QUOTE_NAME = "name";
@@ -81,8 +79,6 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        quoteContentProvider = new QuoteContentProvider();
 
         getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this);
         getActivity().getSupportLoaderManager().getLoader(R.id.quote_cursor_loader).forceLoad();
@@ -122,7 +118,7 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == R.id.quote_cursor_loader) {
-            return new MyCursorLoader(getContext(), quoteContentProvider, QUOTE_URI);
+            return new MyCursorLoader(getContext(), QuoteContentProvider.QUOTE_CONTENT_URI);
         }
         return null;
     }
@@ -173,7 +169,8 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
                 cv.put("name", quote.getName());
                 cv.put("senderLink", quote.getSenderLink());
                 cv.put("quoteLink", quote.getQuoteLink());
-                quoteContentProvider.insert(QuoteContentProvider.QUOTE_CONTENT_URI, cv);
+                getContext().getContentResolver()
+                        .insert(QuoteContentProvider.QUOTE_CONTENT_URI, cv);
             }
 
             return quotes;
@@ -203,19 +200,16 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
 
     private static class MyCursorLoader extends CursorLoader {
 
-        QuoteContentProvider quoteContentProvider;
-        Uri uri;
+        private Uri uri;
 
-        public MyCursorLoader(Context context, QuoteContentProvider quoteContentProvider, Uri uri) {
+        public MyCursorLoader(Context context, Uri uri) {
             super(context);
-
             this.uri = uri;
-            this.quoteContentProvider = quoteContentProvider;
         }
 
         @Override
         public Cursor loadInBackground() {
-            Cursor cursor = quoteContentProvider.query(uri, null, null, null, null);
+            Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
 
             return cursor;
         }
