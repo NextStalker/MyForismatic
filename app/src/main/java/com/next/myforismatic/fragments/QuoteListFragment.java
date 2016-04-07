@@ -138,16 +138,11 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
             List<Quote> quotes = getQuotes();
 
             for (Quote quote : quotes) {
-                ContentValues cv = new ContentValues();
-                cv.put("text", quote.getText());
-                cv.put("author", quote.getAuthor());
-                cv.put("name", quote.getName());
-                cv.put("senderLink", quote.getSenderLink());
-                cv.put("quoteLink", quote.getQuoteLink());
-                getContext().getContentResolver()
-                        .insert(QuoteContentProvider.QUOTE_CONTENT_URI, cv);
-            }
+                ContentValues contentValues = quote.getContentValues();
 
+                getContext().getContentResolver()
+                        .insert(QuoteContentProvider.QUOTE_CONTENT_URI, contentValues);
+            }
             return quotes;
         }
 

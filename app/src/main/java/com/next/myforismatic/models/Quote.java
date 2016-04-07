@@ -1,5 +1,6 @@
 package com.next.myforismatic.models;
 
+import android.content.ContentValues;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -53,6 +54,17 @@ public class Quote {
                 ", senderLink='" + senderLink + '\'' +
                 ", quoteLink='" + quoteLink + '\'' +
                 '}';
+    }
+
+    public ContentValues getContentValues() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("text", getText());
+        contentValues.put("author", getAuthor());
+        contentValues.put("name", getName());
+        contentValues.put("senderLink", getSenderLink());
+        contentValues.put("quoteLink", getQuoteLink());
+
+        return contentValues;
     }
 
 }
