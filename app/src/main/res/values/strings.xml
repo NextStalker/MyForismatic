@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">MyForismatic</string>
-    <string name="button_name">Новая цитата</string>
-    <string name="buttonPrev_name">Предыдущая цитата</string>
+    <string name="load_more">Load more</string>
 </resources>

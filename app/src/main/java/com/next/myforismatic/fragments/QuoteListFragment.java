@@ -8,13 +8,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,20 +30,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
 
 /**
  * @author Konstantin Abramov on 20.03.16.
  */
-public class QuoteListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    private ForismaticService service;
+public class QuoteListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
@@ -57,6 +51,7 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new QuoteListAdapter();
         recyclerView.setAdapter(adapter);
@@ -68,6 +63,11 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
         getQuotes();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu, menu);
+    }
+
     private void getQuotes() {
         getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this);
         getActivity().getSupportLoaderManager().getLoader(R.id.quote_cursor_loader).forceLoad();
@@ -75,19 +75,6 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
 
     private void getQuotesFromInternet() {
         new MyTask().execute();
-    }
-
-    private void initRetrofit() {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
-        httpClientBuilder.addInterceptor(logging);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://api.forismatic.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClientBuilder.build())
-                .build();
-        service = retrofit.create(ForismaticService.class);
     }
 
     @Override
@@ -103,7 +90,6 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
         List<Quote> list = CursorParse.parseQuotes(data);
 
         if (list.size() == 0) {
-            initRetrofit();
             getQuotesFromInternet();
         } else {
             adapter.setQuotes(list);
@@ -115,20 +101,18 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
 
     }
 
-    public interface ForismaticService {
-
-        @GET("api/1.0/")
-        Call<Quote> getQuote(
-                @Query("method") String method,
-                @Query("format") String format,
-                @Query("lang") String lang,
-                @Query("key") int key
-        );
-
+    public Call<Quote> getQuote(int key) {
+        return getForismaticService().getQuote("getQuote", "json", "ru", key);
     }
 
-    public Call<Quote> getQuote(int key) {
-        return service.getQuote("getQuote", "json", "ru", key);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.load_more_item) {
+            getQuotesFromInternet();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     private class MyTask extends AsyncTask<Void, Void, List<Quote>> {
@@ -181,7 +165,5 @@ public class QuoteListFragment extends Fragment implements LoaderManager.LoaderC
         public Cursor loadInBackground() {
             return getContext().getContentResolver().query(uri, null, null, null, null);
         }
-
     }
-
 }
