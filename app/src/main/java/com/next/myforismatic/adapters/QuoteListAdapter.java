@@ -34,7 +34,14 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
     }
 
     public void setQuotes(@NonNull List<Quote> quotes) {
-        this.quotes = quotes;
+        if (this.quotes.size() == 0) {
+            this.quotes = quotes;
+        } else {
+            for (Quote quote: quotes) {
+                this.quotes.add(quote);
+            }
+        }
+
         notifyDataSetChanged();
     }
 

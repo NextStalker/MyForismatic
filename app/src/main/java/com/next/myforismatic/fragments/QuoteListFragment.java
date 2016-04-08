@@ -40,6 +40,12 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
