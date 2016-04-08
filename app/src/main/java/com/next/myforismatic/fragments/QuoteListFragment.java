@@ -74,6 +74,16 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         inflater.inflate(R.menu.menu, menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.load_more_item) {
+            getQuotesFromInternet();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void getQuotes() {
         getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this);
         getActivity().getSupportLoaderManager().getLoader(R.id.quote_cursor_loader).forceLoad();
@@ -109,16 +119,6 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
     public Call<Quote> getQuote(int key) {
         return getForismaticService().getQuote("getQuote", "json", "ru", key);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.load_more_item) {
-            getQuotesFromInternet();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
     }
 
     private class MyTask extends AsyncTask<Void, Void, List<Quote>> {
