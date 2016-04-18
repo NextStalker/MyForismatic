@@ -89,6 +89,7 @@ public class QuoteContentProvider extends ContentProvider {
         }
 
         db = dbHelper.getWritableDatabase();
+
         Cursor cursor = db.query(QUOTE_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), QUOTE_CONTENT_URI);
 
@@ -190,7 +191,5 @@ public class QuoteContentProvider extends ContentProvider {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         }
-
     }
-
 }

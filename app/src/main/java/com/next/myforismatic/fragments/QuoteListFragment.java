@@ -100,7 +100,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getStringExtra("message") == "finish") {
-                getQuotes();
+                RestartLoader();
                 LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMessageReceiver);
             }
         }
@@ -110,6 +110,10 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     public void onDestroy() {
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMessageReceiver);
         super.onDestroy();
+    }
+
+    private void RestartLoader() {
+        getLoaderManager().restartLoader(R.id.quote_cursor_loader, null, this);
     }
 
     private void getQuotes() {
