@@ -25,6 +25,8 @@
             android:authorities="${applicationId}.contentprovider"
             android:exported="true"/>
 
+        <service android:name=".services.ForismaticIntentService"/>
+
     </application>
 
 </manifest>

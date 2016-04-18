@@ -1,7 +1,11 @@
 package com.next.myforismatic.fragments;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -11,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,6 +30,7 @@ import com.next.myforismatic.adapters.QuoteListAdapter;
 import com.next.myforismatic.common.CursorParse;
 import com.next.myforismatic.models.Quote;
 import com.next.myforismatic.providers.QuoteContentProvider;
+import com.next.myforismatic.services.ForismaticIntentService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +42,10 @@ import retrofit2.Call;
  * @author Konstantin Abramov on 20.03.16.
  */
 public class QuoteListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    final String LOG_TAG = "myLogs";
+    private final int QUOTES_SIZE_FIRST_RUN = 10;
+    private final int QUOTES_SIZE = 10;
 
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
@@ -77,11 +87,29 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.load_more_item) {
-            getQuotesFromInternet();
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(
+                    mMessageReceiver, new IntentFilter("endDownload"));
+            getQuotesFromInternetService();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getStringExtra("message") == "finish") {
+                getQuotes();
+                LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMessageReceiver);
+            }
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
     }
 
     private void getQuotes() {
@@ -91,6 +119,12 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
     private void getQuotesFromInternet() {
         new MyTask().execute();
+    }
+
+    private void getQuotesFromInternetService() {
+        Activity activity = getActivity();
+        Intent intent = new Intent(activity, ForismaticIntentService.class).putExtra("size", QUOTES_SIZE);
+        activity.startService(intent);
     }
 
     @Override
@@ -117,10 +151,6 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
     }
 
-    public Call<Quote> getQuote(int key) {
-        return getForismaticService().getQuote("getQuote", "json", "ru", key);
-    }
-
     private class MyTask extends AsyncTask<Void, Void, List<Quote>> {
 
         @Override
@@ -138,7 +168,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
         @NonNull
         private List<Quote> getQuotes() {
-            int size = 10;
+            int size = QUOTES_SIZE_FIRST_RUN;
             List<Quote> quotes = new ArrayList<>(size);
             try {
                 for (int i = 0; i < size; i++) {
@@ -156,6 +186,10 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         protected void onPostExecute(List<Quote> quotes) {
             adapter.setQuotes(quotes);
         }
+    }
+
+    public Call<Quote> getQuote(int key) {
+        return getForismaticService().getQuote("getQuote", "json", "ru", key);
     }
 
     private static class MyCursorLoader extends CursorLoader {
