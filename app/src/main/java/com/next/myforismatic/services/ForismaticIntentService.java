@@ -8,6 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.next.myforismatic.api.ForismaticApplication;
+import com.next.myforismatic.api.ForismaticService;
 import com.next.myforismatic.models.Quote;
 import com.next.myforismatic.providers.QuoteContentProvider;
 
@@ -23,9 +24,11 @@ import retrofit2.Call;
 public class ForismaticIntentService extends IntentService {
 
     final String LOG_TAG = "myLogs";
+    private ForismaticService forismaticService;
 
     public ForismaticIntentService() {
         super("myName");
+        forismaticService = ((ForismaticApplication)getApplicationContext()).getForismaticService();
     }
 
     @Override
@@ -42,13 +45,10 @@ public class ForismaticIntentService extends IntentService {
 
             getApplicationContext().getContentResolver().insert(QuoteContentProvider.QUOTE_CONTENT_URI, contentValues);
         }
-    }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("endDownload").putExtra("message", "finish"));
-        Log.d(LOG_TAG, "onDestroy");
+        if (quotes.size() == size) {
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("endDownload").putExtra("message", "finish"));
+        }
     }
 
     @NonNull
@@ -68,6 +68,6 @@ public class ForismaticIntentService extends IntentService {
     }
 
     public Call<Quote> getQuote(int key) {
-        return ((ForismaticApplication)getApplicationContext()).getForismaticService().getQuote("getQuote", "json", "ru", key);
+        return forismaticService.getQuote("getQuote", "json", "ru", key);
     }
 }
