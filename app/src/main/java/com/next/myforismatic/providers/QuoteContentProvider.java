@@ -192,4 +192,5 @@ public class QuoteContentProvider extends ContentProvider {
 
         }
     }
+
 }

@@ -21,27 +21,9 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
     @NonNull
     private List<Quote> quotes = Collections.emptyList();
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView quote;
-        private TextView author;
-
-        public ViewHolder(View view) {
-            super(view);
-            quote = (TextView) itemView.findViewById(R.id.quote);
-            author = (TextView) itemView.findViewById(R.id.author);
-        }
-    }
-
     public void setQuotes(@NonNull List<Quote> quotes) {
         this.quotes = quotes;
-
         notifyDataSetChanged();
-    }
-
-    @Override
-    public int getItemCount() {
-        return quotes.size();
     }
 
     @Override
@@ -56,7 +38,21 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
+    public int getItemCount() {
+        return quotes.size();
     }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView quote;
+        private TextView author;
+
+        public ViewHolder(View view) {
+            super(view);
+            quote = (TextView) itemView.findViewById(R.id.quote);
+            author = (TextView) itemView.findViewById(R.id.author);
+        }
+
+    }
+
 }

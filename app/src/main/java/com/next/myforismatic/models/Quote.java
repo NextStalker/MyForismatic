@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by maslparu on 11.03.2016.
  */
 public class Quote {
+
     @SerializedName("quoteText")
     public String text;
     @SerializedName("quoteAuthor")
@@ -20,14 +21,12 @@ public class Quote {
     @SerializedName("quoteLink")
     public String quoteLink;
 
-    public Quote(){}
-
-    public Quote(String text, String author){
+    public Quote(String text, String author) {
         this.text = text;
         this.author = author;
     }
 
-    public Quote(String text, String author, String name, String senderLink, String quoteLink){
+    public Quote(String text, String author, String name, String senderLink, String quoteLink) {
         this.text = text;
         this.author = author;
         this.name = name;
@@ -35,15 +34,35 @@ public class Quote {
         this.quoteLink = quoteLink;
     }
 
-    public String getText() { return text; }
+    public String getText() {
+        return text;
+    }
 
-    public String getAuthor() { return TextUtils.isEmpty(author) ? "Аноним" : author; }
+    public String getAuthor() {
+        return TextUtils.isEmpty(author) ? "Аноним" : author;
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getSenderLink() {return senderLink; }
+    public String getSenderLink() {
+        return senderLink;
+    }
 
-    public String getQuoteLink() { return quoteLink; }
+    public String getQuoteLink() {
+        return quoteLink;
+    }
+
+    public ContentValues getContentValues() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("text", getText());
+        contentValues.put("author", getAuthor());
+        contentValues.put("name", getName());
+        contentValues.put("senderLink", getSenderLink());
+        contentValues.put("quoteLink", getQuoteLink());
+        return contentValues;
+    }
 
     @Override
     public String toString() {
@@ -54,17 +73,6 @@ public class Quote {
                 ", senderLink='" + senderLink + '\'' +
                 ", quoteLink='" + quoteLink + '\'' +
                 '}';
-    }
-
-    public ContentValues getContentValues() {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("text", getText());
-        contentValues.put("author", getAuthor());
-        contentValues.put("name", getName());
-        contentValues.put("senderLink", getSenderLink());
-        contentValues.put("quoteLink", getQuoteLink());
-
-        return contentValues;
     }
 
 }
