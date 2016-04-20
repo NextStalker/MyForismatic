@@ -43,12 +43,22 @@ import retrofit2.Call;
  */
 public class QuoteListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    final String LOG_TAG = "myLogs";
+    private final String LOG_TAG = "myLogs";
     private final int QUOTES_SIZE_FIRST_RUN = 10;
     private final int QUOTES_SIZE = 10;
 
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
+
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getStringExtra("message").equals("finish")) {
+                restartLoader();
+                LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(messageReceiver);
+            }
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,7 +98,9 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.load_more_item) {
             LocalBroadcastManager.getInstance(getContext()).registerReceiver(
-                    mMessageReceiver, new IntentFilter("endDownload"));
+                    messageReceiver,
+                    new IntentFilter("endDownload")
+            );
             getQuotesFromInternetService();
             return true;
         } else {
@@ -96,19 +108,9 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         }
     }
 
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getStringExtra("message") == "finish") {
-                restartLoader();
-                LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMessageReceiver);
-            }
-        }
-    };
-
     @Override
     public void onDestroy() {
-        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMessageReceiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(messageReceiver);
         super.onDestroy();
     }
 
@@ -117,8 +119,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     }
 
     private void getQuotes() {
-        getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this);
-        getActivity().getSupportLoaderManager().getLoader(R.id.quote_cursor_loader).forceLoad();
+        getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this).forceLoad();
     }
 
     private void getQuotesFromInternet() {
@@ -129,6 +130,10 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         Activity activity = getActivity();
         Intent intent = new Intent(activity, ForismaticIntentService.class).putExtra("size", QUOTES_SIZE);
         activity.startService(intent);
+    }
+
+    public Call<Quote> getQuote(int key) {
+        return getForismaticService().getQuote("getQuote", "json", "ru", key);
     }
 
     @Override
@@ -190,10 +195,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         protected void onPostExecute(List<Quote> quotes) {
             adapter.setQuotes(quotes);
         }
-    }
 
-    public Call<Quote> getQuote(int key) {
-        return getForismaticService().getQuote("getQuote", "json", "ru", key);
     }
 
     private static class MyCursorLoader extends CursorLoader {
@@ -210,4 +212,5 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
             return getContext().getContentResolver().query(uri, null, null, null, null);
         }
     }
+
 }
