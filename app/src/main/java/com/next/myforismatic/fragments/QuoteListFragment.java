@@ -211,6 +211,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         public Cursor loadInBackground() {
             return getContext().getContentResolver().query(uri, null, null, null, null);
         }
+
     }
 
 }
