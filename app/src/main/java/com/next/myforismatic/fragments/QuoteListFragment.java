@@ -16,6 +16,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,7 +42,7 @@ import retrofit2.Call;
 /**
  * @author Konstantin Abramov on 20.03.16.
  */
-public class QuoteListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class QuoteListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
 
     private final String LOG_TAG = "myLogs";
     private final int QUOTES_SIZE_FIRST_RUN = 10;
@@ -49,6 +50,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -86,12 +88,18 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeColors(R.color.blue, R.color.green, R.color.yellow, R.color.red);
+
         getQuotes();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu, menu);
+        menu.getItem(0).setVisible(false);
     }
 
     @Override
@@ -160,6 +168,19 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
     }
 
+    @Override
+    public void onRefresh() {
+        swipeRefreshLayout.setRefreshing(true);
+
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(
+                messageReceiver,
+                new IntentFilter("endDownload")
+        );
+        getQuotesFromInternetService();
+
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
     private class MyTask extends AsyncTask<Void, Void, List<Quote>> {
 
         @Override
@@ -209,9 +230,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
         @Override
         public Cursor loadInBackground() {
-            return getContext().getContentResolver().query(uri, null, null, null, null);
+            return getContext().getContentResolver().query(uri, null, null, null, "id");
         }
-
     }
-
 }

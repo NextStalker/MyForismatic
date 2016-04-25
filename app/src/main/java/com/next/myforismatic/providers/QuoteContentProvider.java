@@ -84,6 +84,10 @@ public class QuoteContentProvider extends ContentProvider {
                 } else {
                     selection += " AND " + QUOTE_ID + " = " + id;
                 }
+
+                if (!(TextUtils.isEmpty(sortOrder))) {
+                    sortOrder = QUOTE_ID + " desc";
+                }
             default:
                 throw new IllegalArgumentException("Wrong uri: " + uri);
         }
