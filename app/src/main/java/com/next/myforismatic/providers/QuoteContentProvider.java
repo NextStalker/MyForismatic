@@ -23,7 +23,7 @@ public class QuoteContentProvider extends ContentProvider {
     private static final String DB_NAME = "quotes.db";
     private static final String QUOTE_TABLE = "quotes";
 
-    private static final String QUOTE_ID = "_id";
+    public static final String QUOTE_ID = "_id";
     private static final String QUOTE_TEXT = "text";
     private static final String QUOTE_AUTHOR = "author";
     private static final String QUOTE_NAME = "name";

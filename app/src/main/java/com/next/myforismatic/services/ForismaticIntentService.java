@@ -23,16 +23,19 @@ import retrofit2.Call;
  */
 public class ForismaticIntentService extends IntentService {
 
+    public static boolean isLoading;
+
     private final String LOG_TAG = "myLogs";
     private ForismaticService forismaticService;
 
     public ForismaticIntentService() {
         super(ForismaticIntentService.class.getSimpleName());
-        forismaticService = ((ForismaticApplication) getApplicationContext()).getForismaticService();
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        isLoading = true;
+        forismaticService = ((ForismaticApplication) getApplicationContext()).getForismaticService();
         Log.d(LOG_TAG, "Start");
 
         int size = intent.getIntExtra("size", 0);
@@ -50,6 +53,7 @@ public class ForismaticIntentService extends IntentService {
                             new Intent("endDownload").putExtra("message", "finish")
                     );
         }
+        isLoading = false;
     }
 
     @NonNull
@@ -70,6 +74,12 @@ public class ForismaticIntentService extends IntentService {
 
     public Call<Quote> getQuote(int key) {
         return forismaticService.getQuote("getQuote", "json", "ru", key);
+    }
+
+    @Override
+    public void onDestroy() {
+        isLoading = false;
+        super.onDestroy();
     }
 
 }

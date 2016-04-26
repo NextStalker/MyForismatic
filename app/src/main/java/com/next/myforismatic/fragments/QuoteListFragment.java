@@ -46,7 +46,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
     private final String LOG_TAG = "myLogs";
     private final int QUOTES_SIZE_FIRST_RUN = 10;
-    private final int QUOTES_SIZE = 10;
+    private final int QUOTES_SIZE = 100;
 
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
@@ -93,23 +93,25 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeColors(R.color.blue, R.color.green, R.color.yellow, R.color.red);
 
+        swipeRefreshLayout.postDelayed(() -> {
+            if (ForismaticIntentService.isLoading) {
+                registerReceiver();
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        }, 500);
+
         getQuotes();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu, menu);
-        menu.getItem(0).setVisible(false);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.load_more_item) {
-            LocalBroadcastManager.getInstance(getContext()).registerReceiver(
-                    messageReceiver,
-                    new IntentFilter("endDownload")
-            );
-            getQuotesFromInternetService();
+            registerReceiverAndStartService();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -123,6 +125,9 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     }
 
     private void restartLoader() {
+        if (!swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(true);
+        }
         getLoaderManager().restartLoader(R.id.quote_cursor_loader, null, this);
     }
 
@@ -132,6 +137,18 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
     private void getQuotesFromInternet() {
         new MyTask().execute();
+    }
+
+    private void registerReceiverAndStartService() {
+        registerReceiver();
+        getQuotesFromInternetService();
+    }
+
+    private void registerReceiver() {
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(
+                messageReceiver,
+                new IntentFilter("endDownload")
+        );
     }
 
     private void getQuotesFromInternetService() {
@@ -161,6 +178,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         } else {
             adapter.setQuotes(list);
         }
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -171,17 +189,16 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
-
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(
-                messageReceiver,
-                new IntentFilter("endDownload")
-        );
-        getQuotesFromInternetService();
-
-        swipeRefreshLayout.setRefreshing(false);
+        registerReceiverAndStartService();
     }
 
     private class MyTask extends AsyncTask<Void, Void, List<Quote>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            swipeRefreshLayout.setRefreshing(true);
+        }
 
         @Override
         protected List<Quote> doInBackground(Void... params) {
@@ -214,7 +231,10 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
         @Override
         protected void onPostExecute(List<Quote> quotes) {
-            adapter.setQuotes(quotes);
+            if (isAdded()) {
+                swipeRefreshLayout.setRefreshing(false);
+                adapter.setQuotes(quotes);
+            }
         }
 
     }
@@ -230,7 +250,11 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
         @Override
         public Cursor loadInBackground() {
-            return getContext().getContentResolver().query(uri, null, null, null, "id");
+            return getContext().getContentResolver().query(
+                    uri, null, null, null,
+                    QuoteContentProvider.QUOTE_ID
+            );
         }
+
     }
 }

@@ -5,6 +5,7 @@
     <item
         android:id="@+id/load_more_item"
         app:showAsAction="always"
+        android:visible="false"
         android:icon="@android:drawable/ic_menu_add"
         android:title="@string/load_more"/>
 </menu>
