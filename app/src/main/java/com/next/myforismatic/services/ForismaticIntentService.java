@@ -33,9 +33,14 @@ public class ForismaticIntentService extends IntentService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        forismaticService = ((ForismaticApplication) getApplicationContext()).getForismaticService();
+    }
+
+    @Override
     protected void onHandleIntent(Intent intent) {
         isLoading = true;
-        forismaticService = ((ForismaticApplication) getApplicationContext()).getForismaticService();
         Log.d(LOG_TAG, "Start");
 
         int size = intent.getIntExtra("size", 0);
