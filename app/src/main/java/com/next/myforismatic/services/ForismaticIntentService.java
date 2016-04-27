@@ -3,6 +3,7 @@ package com.next.myforismatic.services;
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -63,9 +64,14 @@ public class ForismaticIntentService extends IntentService {
 
     @NonNull
     private List<Quote> getQuotes(int size) {
+
+        Cursor cursor = getApplicationContext().getContentResolver().query(QuoteContentProvider.QUOTE_CONTENT_URI, new String[] {QuoteContentProvider.QUOTE_ID}, null, null, null);
+
+        int count = cursor.getCount();
+
         List<Quote> quotes = new ArrayList<>(size);
         try {
-            for (int i = 0; i < size; i++) {
+            for (int i = count; i < size + count; i++) {
                 Call<Quote> callQ = getQuote(i);
                 Quote quote = callQ.execute().body();
                 quotes.add(quote);
