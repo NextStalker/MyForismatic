@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">MyForismatic</string>
     <string name="load_more">Load more</string>
+    <string name="first">First</string>
+    <string name="second">Second</string>
+    <string name="third">Third</string>
+    <string name="openDrawer">OpenDrawer</string>
+    <string name="closeDrawer">CloseDrawer</string>
 </resources>

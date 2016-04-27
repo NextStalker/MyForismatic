@@ -69,6 +69,8 @@ public class ForismaticIntentService extends IntentService {
 
         int count = cursor.getCount();
 
+        cursor.close();
+
         List<Quote> quotes = new ArrayList<>(size);
         try {
             for (int i = count; i < size + count; i++) {
@@ -92,5 +94,4 @@ public class ForismaticIntentService extends IntentService {
         isLoading = false;
         super.onDestroy();
     }
-
 }

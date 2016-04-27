@@ -25,6 +25,8 @@ project.ext {
     junitVersion = '4.12'
     retrofitVersion = '2.0.0'
     okhttpVersion = '3.2.0'
+
+    design = '23.3.0'
 }
 
 allprojects {
