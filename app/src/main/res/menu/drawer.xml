@@ -3,18 +3,13 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/first"
+            android:id="@+id/search"
             android:checked="false"
-            android:title="@string/first" />
+            android:title="@string/search" />
 
         <item
-            android:id="@+id/second"
+            android:id="@+id/settings"
             android:checked="false"
-            android:title="@string/second" />
-
-        <item
-            android:id="@+id/third"
-            android:checked="false"
-            android:title="@string/third" />
+            android:title="@string/settings" />
     </group>
 </menu>

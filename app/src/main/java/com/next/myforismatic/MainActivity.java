@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
         root = (View) findViewById(R.id.drawer);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
 
@@ -46,14 +48,11 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.closeDrawers();
 
                 switch (item.getItemId()) {
-                    case R.id.first:
-                        Snackbar.make(root, "first", Snackbar.LENGTH_LONG).show();
+                    case R.id.search:
+                        Snackbar.make(root, "search", Snackbar.LENGTH_LONG).show();
                         return true;
-                    case R.id.second:
-                        Snackbar.make(root, "second", Snackbar.LENGTH_LONG).show();
-                        return true;
-                    case R.id.third:
-                        Snackbar.make(root, "third", Snackbar.LENGTH_LONG).show();
+                    case R.id.settings:
+                        Snackbar.make(root, "settings", Snackbar.LENGTH_LONG).show();
                         return true;
                     default:
                         Snackbar.make(root, "Something wrong", Snackbar.LENGTH_LONG).show();
