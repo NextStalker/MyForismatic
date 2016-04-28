@@ -17,7 +17,7 @@ project.ext {
     minSdkVersion = 16
     targetSdkVersion = 23
 
-    supportLibraryVersion = '23.2.1'
+    supportLibraryVersion = '23.3.0'
     playServicesVersion = '8.4.0'
     rxAndroidVersion = '1.1.0'
     rxJavaVersion = '1.1.1'
@@ -25,8 +25,6 @@ project.ext {
     junitVersion = '4.12'
     retrofitVersion = '2.0.0'
     okhttpVersion = '3.2.0'
-
-    design = '23.3.0'
 }
 
 allprojects {
