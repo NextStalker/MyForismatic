@@ -8,7 +8,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.next.myforismatic.fragments.QuoteListFragment;
@@ -22,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,39 +30,36 @@ public class MainActivity extends AppCompatActivity {
             showQuoteListFragment();
         }
 
-        root = (View) findViewById(R.id.drawer);
+        root = findViewById(R.id.drawer);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+        navigationView.setNavigationItemSelectedListener(item -> {
+            if (item.isChecked()) {
+                item.setChecked(false);
+            } else {
+                item.setChecked(true);
+            }
 
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                if (item.isChecked()) {
-                    item.setChecked(false);
-                } else {
-                    item.setChecked(true);
-                }
+            drawerLayout.closeDrawers();
 
-                drawerLayout.closeDrawers();
-
-                switch (item.getItemId()) {
-                    case R.id.search:
-                        Snackbar.make(root, "search", Snackbar.LENGTH_LONG).show();
-                        return true;
-                    case R.id.settings:
-                        Snackbar.make(root, "settings", Snackbar.LENGTH_LONG).show();
-                        return true;
-                    default:
-                        Snackbar.make(root, "Something wrong", Snackbar.LENGTH_LONG).show();
-                        return  false;
-                }
+            switch (item.getItemId()) {
+                case R.id.search:
+                    Snackbar.make(root, "search", Snackbar.LENGTH_LONG).show();
+                    return true;
+                case R.id.settings:
+                    Snackbar.make(root, "settings", Snackbar.LENGTH_LONG).show();
+                    return true;
+                default:
+                    Snackbar.make(root, "Something wrong", Snackbar.LENGTH_LONG).show();
+                    return  false;
             }
         });
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer) {
+        drawerLayout = (DrawerLayout) root;
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
@@ -74,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
 
         actionBarDrawerToggle.syncState();
     }
@@ -89,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.drawer, new QuoteListFragment(), TAG)
+                    .replace(R.id.main_container, new QuoteListFragment(), TAG)
                     .commit();
         }
     }
