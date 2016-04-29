@@ -28,13 +28,22 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_qoute_item, viewGroup, false));
+        return new ViewHolder(
+                LayoutInflater.from(viewGroup.getContext()).inflate(
+                        R.layout.view_qoute_item, viewGroup, false
+                )
+        );
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         viewHolder.quote.setText(quotes.get(position).getText());
-        viewHolder.author.setText(quotes.get(position).getAuthor());
+        viewHolder.author.setText(
+                viewHolder.itemView.getContext().getString(
+                        R.string.author_format,
+                        quotes.get(position).getAuthor()
+                )
+        );
     }
 
     @Override
