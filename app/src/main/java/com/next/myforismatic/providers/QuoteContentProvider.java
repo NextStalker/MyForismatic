@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
@@ -122,11 +123,22 @@ public class QuoteContentProvider extends ContentProvider {
         }
 
         db = dbHelper.getWritableDatabase();
-        long rowID = db.insert(QUOTE_TABLE, null, values);
-        Uri resultUri = ContentUris.withAppendedId(uri, rowID);
-        getContext().getContentResolver().notifyChange(resultUri, null);
-
-        return resultUri;
+        String selection = QUOTE_QUOTE_LINK + "=?";
+        long rowId;
+        String[] selectionArgs = new String[]{values.getAsString(QUOTE_QUOTE_LINK)};
+        int affected = db.update(QUOTE_TABLE, values, selection, selectionArgs);
+        if (affected == 0) {
+            rowId = db.insert(QUOTE_TABLE, null, values);
+            if (rowId > 0) {
+                Uri resultUri = ContentUris.withAppendedId(uri, rowId);
+                getContext().getContentResolver().notifyChange(resultUri, null);
+                return resultUri;
+            } else {
+                throw new SQLException("Failed to insert row into " + uri);
+            }
+        } else {
+            return uri;
+        }
     }
 
     @Override
