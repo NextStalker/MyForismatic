@@ -156,8 +156,13 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         activity.startService(intent);
     }
 
-    public Call<Quote> getQuote(int key) {
+    private Call<Quote> getQuote(int key) {
         return getForismaticService().getQuote("getQuote", "json", "ru", key);
+    }
+
+    private void setQuotes(List<Quote> quotes) {
+        swipeRefreshLayout.setRefreshing(false);
+        adapter.setQuotes(quotes);
     }
 
     @Override
@@ -170,14 +175,13 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        List<Quote> list = CursorParse.parseQuotes(data);
+        List<Quote> quotes = CursorParse.parseQuotes(data);
 
-        if (list.size() == 0) {
+        if (quotes.size() == 0) {
             getQuotesFromInternet();
         } else {
-            adapter.setQuotes(list);
+            setQuotes(quotes);
         }
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -231,8 +235,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         @Override
         protected void onPostExecute(List<Quote> quotes) {
             if (isAdded()) {
-                swipeRefreshLayout.setRefreshing(false);
-                adapter.setQuotes(quotes);
+                setQuotes(quotes);
             }
         }
 
@@ -256,4 +259,5 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         }
 
     }
+
 }
