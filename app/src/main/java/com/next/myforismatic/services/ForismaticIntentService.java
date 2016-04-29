@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.next.myforismatic.ForismaticApplication;
 import com.next.myforismatic.api.ForismaticService;
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
+import timber.log.Timber;
 
 /**
  * Created by maslparu on 18.04.2016.
@@ -26,7 +26,6 @@ public class ForismaticIntentService extends IntentService {
 
     public static boolean isLoading;
 
-    private final String LOG_TAG = "myLogs";
     private ForismaticService forismaticService;
 
     public ForismaticIntentService() {
@@ -42,7 +41,7 @@ public class ForismaticIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         isLoading = true;
-        Log.d(LOG_TAG, "Start");
+        Timber.d("Start");
 
         int size = intent.getIntExtra("size", 0);
 
@@ -77,7 +76,7 @@ public class ForismaticIntentService extends IntentService {
                 Call<Quote> callQ = getQuote(i);
                 Quote quote = callQ.execute().body();
                 quotes.add(quote);
-                Log.d(LOG_TAG, "quote#" + i);
+                Timber.d("quote# %d", i);
             }
         } catch (IOException ignored) {
             //not supported
@@ -94,4 +93,5 @@ public class ForismaticIntentService extends IntentService {
         isLoading = false;
         super.onDestroy();
     }
+
 }

@@ -44,7 +44,6 @@ import retrofit2.Call;
  */
 public class QuoteListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
 
-    private final String LOG_TAG = "myLogs";
     private final int QUOTES_SIZE_FIRST_RUN = 10;
     private final int QUOTES_SIZE = 100;
 
