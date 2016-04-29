@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.next.myforismatic.R;
-import com.next.myforismatic.api.ForismaticApplication;
+import com.next.myforismatic.ForismaticApplication;
 import com.next.myforismatic.api.ForismaticService;
 
 /**

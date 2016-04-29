@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.next.myforismatic.api.ForismaticApplication;
+import com.next.myforismatic.ForismaticApplication;
 import com.next.myforismatic.api.ForismaticService;
 import com.next.myforismatic.models.Quote;
 import com.next.myforismatic.providers.QuoteContentProvider;

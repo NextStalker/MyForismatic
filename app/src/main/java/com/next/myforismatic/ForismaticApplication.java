@@ -1,6 +1,8 @@
-package com.next.myforismatic.api;
+package com.next.myforismatic;
 
 import android.app.Application;
+
+import com.next.myforismatic.api.ForismaticService;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -36,4 +38,5 @@ public class ForismaticApplication extends Application {
     public ForismaticService getForismaticService() {
         return service;
     }
+
 }
