@@ -6,6 +6,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:2.0.0'
         classpath 'me.tatarka:gradle-retrolambda:3.2.4'
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }
@@ -25,6 +26,9 @@ project.ext {
     junitVersion = '4.12'
     retrofitVersion = '2.0.0'
     okhttpVersion = '3.2.0'
+    daggerVersion = '2.0.2'
+
+    timberVersion = '4.1.1'
 }
 
 allprojects {
