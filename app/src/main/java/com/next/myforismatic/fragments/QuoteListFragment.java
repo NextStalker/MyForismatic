@@ -135,6 +135,23 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     }
 
     private void getQuotesFromInternet() {
+        rx.Observable.fromCallable(() -> {
+            int size = QUOTES_SIZE_FIRST_RUN;
+            List<Quote> quotes = new ArrayList<>(size);
+            try {
+                for (int i = 0; i < size; i++) {
+                    Call<Quote> callQ = getQuote(i);
+                    Quote quote = callQ.execute().body();
+                    quotes.add(quote);
+                }
+            } catch (IOException ignored) {
+                //not supported
+            }
+            return rx.Observable.just(quotes);
+        });
+    }
+
+    private void getQuotesFromInternetOld() {
         new MyTask().execute();
     }
 
