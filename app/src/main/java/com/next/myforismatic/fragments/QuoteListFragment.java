@@ -38,6 +38,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Konstantin Abramov on 20.03.16.
@@ -135,9 +138,10 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     }
 
     private void getQuotesFromInternet() {
+        int size = QUOTES_SIZE_FIRST_RUN;
+        List<Quote> quotes = new ArrayList<>(size);
+
         rx.Observable.fromCallable(() -> {
-            int size = QUOTES_SIZE_FIRST_RUN;
-            List<Quote> quotes = new ArrayList<>(size);
             try {
                 for (int i = 0; i < size; i++) {
                     Call<Quote> callQ = getQuote(i);
@@ -147,7 +151,27 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
             } catch (IOException ignored) {
                 //not supported
             }
-            return rx.Observable.just(quotes);
+            return rx.Observable.just(quotes)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<List<Quote>>() {
+                        @Override
+                        public void onCompleted() {
+                            if (isAdded()) {
+                                setQuotes(quotes);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(List<Quote> quotes) {
+
+                        }
+                    });
         });
     }
 
