@@ -38,8 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
+import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -53,6 +56,8 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
+
+    private Subscription subscription;
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -137,11 +142,13 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this).forceLoad();
     }
 
-    private void getQuotesFromInternet() {
+    private Observable<List<Quote>> getQuotesFromInternet() {
         int size = QUOTES_SIZE_FIRST_RUN;
         List<Quote> quotes = new ArrayList<>(size);
 
-        rx.Observable.fromCallable(() -> {
+        return null;
+        /*
+        return rx.Observable.fromCallable(() -> {
             try {
                 for (int i = 0; i < size; i++) {
                     Call<Quote> callQ = getQuote(i);
@@ -151,28 +158,9 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
             } catch (IOException ignored) {
                 //not supported
             }
-            return rx.Observable.just(quotes)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<List<Quote>>() {
-                        @Override
-                        public void onCompleted() {
-                            if (isAdded()) {
-                                setQuotes(quotes);
-                            }
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-
-                        }
-
-                        @Override
-                        public void onNext(List<Quote> quotes) {
-
-                        }
-                    });
+            return rx.Observable.just(quotes);
         });
+        */
     }
 
     private void getQuotesFromInternetOld() {
