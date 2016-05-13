@@ -105,7 +105,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
             }
         }, 500);
 
-        getQuotes();
+        retrieveQuotes();
     }
 
     @Override
@@ -125,7 +125,7 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
     @Override
     public void onDestroy() {
-        if(subscription != null) {
+        if (subscription != null) {
             subscription.unsubscribe();
         }
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(messageReceiver);
@@ -139,23 +139,14 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         getLoaderManager().restartLoader(R.id.quote_cursor_loader, null, this);
     }
 
-    private void getQuotes() {
+    private void retrieveQuotes() {
         getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this).forceLoad();
     }
 
     private Observable<List<Quote>> observeQuotesFromInternet() {
         return Observable.fromCallable(() -> {
-            int size = QUOTES_SIZE_FIRST_RUN;
-            List<Quote> quotes = new ArrayList<>(size);
-            try {
-                for (int i = 0; i < size; i++) {
-                    Call<Quote> callQ = getQuote(i);
-                    Quote quote = callQ.execute().body();
-                    quotes.add(quote);
-                }
-            } catch (IOException ignored) {
-                //not supported
-            }
+            List<Quote> quotes = getQuotes();
+            insertQuotes(quotes);
             return quotes;
         }).subscribeOn(Schedulers.io());
     }
@@ -194,7 +185,32 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         return getForismaticService().getQuote("getQuote", "json", "ru", key);
     }
 
-    private void setQuotes(List<Quote> quotes) {
+    @NonNull
+    private List<Quote> getQuotes() {
+        int size = QUOTES_SIZE_FIRST_RUN;
+        List<Quote> quotes = new ArrayList<>(size);
+        try {
+            for (int i = 0; i < size; i++) {
+                Call<Quote> callQ = getQuote(i);
+                Quote quote = callQ.execute().body();
+                quotes.add(quote);
+            }
+        } catch (IOException ignored) {
+            //not supported
+        }
+        return quotes;
+    }
+
+    private void insertQuotes(@NonNull List<Quote> quotes) {
+        for (Quote quote : quotes) {
+            ContentValues contentValues = quote.getContentValues();
+
+            getContext().getContentResolver()
+                    .insert(QuoteContentProvider.QUOTE_CONTENT_URI, contentValues);
+        }
+    }
+
+    private void setQuotes(@NonNull List<Quote> quotes) {
         swipeRefreshLayout.setRefreshing(false);
         adapter.setQuotes(quotes);
     }
@@ -240,31 +256,10 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         @Override
         protected List<Quote> doInBackground(Void... params) {
             List<Quote> quotes = getQuotes();
-
-            for (Quote quote : quotes) {
-                ContentValues contentValues = quote.getContentValues();
-
-                getContext().getContentResolver()
-                        .insert(QuoteContentProvider.QUOTE_CONTENT_URI, contentValues);
-            }
+            insertQuotes(quotes);
             return quotes;
         }
 
-        @NonNull
-        private List<Quote> getQuotes() {
-            int size = QUOTES_SIZE_FIRST_RUN;
-            List<Quote> quotes = new ArrayList<>(size);
-            try {
-                for (int i = 0; i < size; i++) {
-                    Call<Quote> callQ = getQuote(i);
-                    Quote quote = callQ.execute().body();
-                    quotes.add(quote);
-                }
-            } catch (IOException ignored) {
-                //not supported
-            }
-            return quotes;
-        }
 
         @Override
         protected void onPostExecute(List<Quote> quotes) {
