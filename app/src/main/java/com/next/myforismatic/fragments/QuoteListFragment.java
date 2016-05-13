@@ -39,10 +39,8 @@ import java.util.List;
 
 import retrofit2.Call;
 import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -127,6 +125,9 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
 
     @Override
     public void onDestroy() {
+        if(subscription != null) {
+            subscription.unsubscribe();
+        }
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(messageReceiver);
         super.onDestroy();
     }
@@ -142,13 +143,10 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
         getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this).forceLoad();
     }
 
-    private Observable<List<Quote>> getQuotesFromInternet() {
-        int size = QUOTES_SIZE_FIRST_RUN;
-        List<Quote> quotes = new ArrayList<>(size);
-
-        return null;
-        /*
-        return rx.Observable.fromCallable(() -> {
+    private Observable<List<Quote>> observeQuotesFromInternet() {
+        return Observable.fromCallable(() -> {
+            int size = QUOTES_SIZE_FIRST_RUN;
+            List<Quote> quotes = new ArrayList<>(size);
             try {
                 for (int i = 0; i < size; i++) {
                     Call<Quote> callQ = getQuote(i);
@@ -158,9 +156,16 @@ public class QuoteListFragment extends BaseFragment implements LoaderManager.Loa
             } catch (IOException ignored) {
                 //not supported
             }
-            return rx.Observable.just(quotes);
-        });
-        */
+            return quotes;
+        }).subscribeOn(Schedulers.io());
+    }
+
+    private void getQuotesFromInternet() {
+        swipeRefreshLayout.setRefreshing(true);
+        subscription = observeQuotesFromInternet()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(() -> swipeRefreshLayout.setRefreshing(false))
+                .subscribe(this::setQuotes);
     }
 
     private void getQuotesFromInternetOld() {
