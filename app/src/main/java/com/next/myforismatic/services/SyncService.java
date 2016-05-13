@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.next.myforismatic.adapters.SyncAdapter;
+import com.next.myforismatic.api.sync.SyncAdapter;
 
 /**
  * Created by Next on 13.05.2016.

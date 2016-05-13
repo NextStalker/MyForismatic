@@ -37,7 +37,7 @@ public class QuoteContentProvider extends ContentProvider {
             QUOTE_NAME + " text, " + QUOTE_SENDER_LINK + " text, " +
             QUOTE_QUOTE_LINK + " text" + ")";
 
-    private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".contentprovider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".contentprovider";
 
     private static final String QUOTE_PATH = "quotes";
 
