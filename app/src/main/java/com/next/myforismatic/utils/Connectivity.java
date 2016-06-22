@@ -113,7 +113,7 @@ public class Connectivity {
     public static void openWifiSettings(Context context) {
         final Intent intent = new Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        final ComponentName cn = new ComponentName("com.android.settings", "com.android.settings.wifi.WifiSettings");
+        final ComponentName cn = new ComponentName("com.android.fragment_settings", "com.android.fragment_settings.wifi.WifiSettings");
         // > 3.0 Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
         intent.setComponent(cn);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -3,6 +3,7 @@
     <string name="load_more">Load more</string>
     <string name="search">Search</string>
     <string name="settings">Settings</string>
+    <string name="countQuotes">Количество цитат:</string>
     <string name="openDrawer">OpenDrawer</string>
     <string name="closeDrawer">CloseDrawer</string>
 

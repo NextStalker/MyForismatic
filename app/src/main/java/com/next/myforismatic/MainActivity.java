@@ -11,10 +11,12 @@ import android.view.Menu;
 import android.view.View;
 
 import com.next.myforismatic.fragments.QuoteListFragment;
+import com.next.myforismatic.fragments.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = QuoteListFragment.class.getSimpleName();
+    public static final String TAG_SETTINGS = SettingsFragment.class.getSimpleName();
 
     private View root;
     private Toolbar toolbar;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                     Snackbar.make(root, "search", Snackbar.LENGTH_LONG).show();
                     return true;
                 case R.id.settings:
-                    Snackbar.make(root, "settings", Snackbar.LENGTH_LONG).show();
+                    showSettingsFragment();
                     return true;
                 default:
                     Snackbar.make(root, "Something wrong", Snackbar.LENGTH_LONG).show();
@@ -87,6 +89,15 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_container, new QuoteListFragment(), TAG)
+                    .commit();
+        }
+    }
+    private void showSettingsFragment() {
+        if (getSupportFragmentManager().findFragmentByTag(TAG_SETTINGS) == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.main_container, new SettingsFragment(), TAG_SETTINGS)
+                    .addToBackStack(TAG_SETTINGS)
                     .commit();
         }
     }
