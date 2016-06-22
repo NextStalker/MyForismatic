@@ -1,10 +1,10 @@
 package com.next.myforismatic.utils;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 
 public class Connectivity {
@@ -111,11 +111,7 @@ public class Connectivity {
     }
 
     public static void openWifiSettings(Context context) {
-        final Intent intent = new Intent(Intent.ACTION_MAIN, null);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        final ComponentName cn = new ComponentName("com.android.fragment_settings", "com.android.fragment_settings.wifi.WifiSettings");
-        // > 3.0 Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-        intent.setComponent(cn);
+        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
