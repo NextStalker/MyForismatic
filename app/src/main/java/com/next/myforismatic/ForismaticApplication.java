@@ -11,8 +11,8 @@ import com.next.myforismatic.modules.AppModule;
  */
 public class ForismaticApplication extends Application {
 
-    //private ForismaticService service;
     private static AppComponent component;
+
     public static AppComponent getComponent() {
         return component;
     }
@@ -20,8 +20,7 @@ public class ForismaticApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        //initRetrofit();
-        buildComponent();
+        component = buildComponent();
     }
 
     protected AppComponent buildComponent() {
@@ -30,23 +29,4 @@ public class ForismaticApplication extends Application {
                 .build();
     }
 
-/*
-    private void initRetrofit() {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
-        httpClientBuilder.addInterceptor(logging);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://api.forismatic.com/")
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClientBuilder.build())
-                .build();
-        service = retrofit.create(ForismaticService.class);
-    }
-
-    public ForismaticService getForismaticService() {
-        return service;
-    }
-*/
 }

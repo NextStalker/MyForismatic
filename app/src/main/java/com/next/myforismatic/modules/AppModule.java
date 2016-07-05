@@ -24,10 +24,6 @@ public class AppModule {
     @NonNull
     @Singleton
     public ForismaticService provideForismaticService() {
-        return getForismaticService();
-    }
-
-    private ForismaticService getForismaticService() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
@@ -40,4 +36,5 @@ public class AppModule {
                 .build();
         return retrofit.create(ForismaticService.class);
     }
+
 }

@@ -16,5 +16,7 @@ import dagger.Component;
 public interface AppComponent {
 
     void inject(BaseFragment fragment);
+
     void inject(ForismaticIntentService intentService);
+
 }
