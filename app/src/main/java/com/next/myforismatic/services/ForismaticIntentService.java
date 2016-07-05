@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import timber.log.Timber;
 
@@ -24,9 +26,12 @@ import timber.log.Timber;
  */
 public class ForismaticIntentService extends IntentService {
 
+    @Inject
+    ForismaticService forismaticService;
+
     public static boolean isLoading;
 
-    private ForismaticService forismaticService;
+    //private ForismaticService forismaticService;
 
     public ForismaticIntentService() {
         super(ForismaticIntentService.class.getSimpleName());
@@ -35,7 +40,8 @@ public class ForismaticIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        forismaticService = ((ForismaticApplication) getApplicationContext()).getForismaticService();
+        ForismaticApplication.getComponent().inject(this);
+        //forismaticService = ((ForismaticApplication) getApplicationContext()).getForismaticService();
     }
 
     @Override

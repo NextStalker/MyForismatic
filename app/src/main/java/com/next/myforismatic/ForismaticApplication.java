@@ -2,27 +2,35 @@ package com.next.myforismatic;
 
 import android.app.Application;
 
-import com.next.myforismatic.api.ForismaticService;
-
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import com.next.myforismatic.components.AppComponent;
+import com.next.myforismatic.components.DaggerAppComponent;
+import com.next.myforismatic.modules.AppModule;
 
 /**
  * Created by Next on 07.04.2016.
  */
 public class ForismaticApplication extends Application {
 
-    private ForismaticService service;
+    //private ForismaticService service;
+    private static AppComponent component;
+    public static AppComponent getComponent() {
+        return component;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        initRetrofit();
+        //initRetrofit();
+        buildComponent();
     }
 
+    protected AppComponent buildComponent() {
+        return DaggerAppComponent.builder()
+                .appModule(new AppModule())
+                .build();
+    }
+
+/*
     private void initRetrofit() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -40,5 +48,5 @@ public class ForismaticApplication extends Application {
     public ForismaticService getForismaticService() {
         return service;
     }
-
+*/
 }
