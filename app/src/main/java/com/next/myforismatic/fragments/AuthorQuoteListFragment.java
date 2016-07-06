@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -29,7 +30,7 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
 
     private RecyclerView recyclerView;
     private QuoteListAdapter adapter;
-    private String authorName;
+    private String author;
 
     @Nullable
     @Override
@@ -46,6 +47,12 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new QuoteListAdapter();
         recyclerView.setAdapter(adapter);
+
+        Bundle bundle = this.getArguments();
+
+        if (bundle != null) {
+            author = bundle.getString("author");
+        }
     }
 
     @Override
@@ -61,7 +68,7 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == R.id.quote_cursor_loader) {
-            return new MyCursorLoader(getContext(), QuoteContentProvider.QUOTE_CONTENT_URI, authorName);
+            return new MyCursorLoader(getContext(), QuoteContentProvider.QUOTE_CONTENT_URI, author);
         }
         return null;
     }
@@ -69,15 +76,7 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         List<Quote> quotes = CursorParse.parseQuotes(data);
-
-        //TODO Implement getQuotes
-        /*
-        if (quotes.size() == 0) {
-            getQuotesFromInternet();
-        } else {
-            setQuotes(quotes);
-        }
-        */
+        setQuotes(quotes);
     }
 
     @Override
@@ -85,21 +84,25 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
 
     }
 
+    private void setQuotes(@NonNull List<Quote> quotes) {
+        adapter.setQuotes(quotes);
+    }
+
     private static class MyCursorLoader extends CursorLoader {
 
         private Uri uri;
-        private String authorName;
+        private String author;
 
-        public MyCursorLoader(Context context, Uri uri, String authorName) {
+        public MyCursorLoader(Context context, Uri uri, String author) {
             super(context);
             this.uri = uri;
-            this.authorName = authorName;
+            this.author = author;
         }
 
         @Override
         public Cursor loadInBackground() {
             return getContext().getContentResolver().query(
-                    uri, null, "author", new String[] {authorName},
+                    uri, null, "author", new String[] {author},
                     QuoteContentProvider.QUOTE_ID
             );
         }

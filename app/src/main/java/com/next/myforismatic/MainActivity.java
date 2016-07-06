@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 default:
                     Snackbar.make(root, "Something wrong", Snackbar.LENGTH_LONG).show();
-                    return  false;
+                    return false;
             }
         });
 
