@@ -14,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.next.myforismatic.R;
 import com.next.myforismatic.adapters.QuoteListAdapter;
@@ -53,8 +52,6 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
 
         if (bundle != null) {
             author = bundle.getString(QuoteContentProvider.QUOTE_AUTHOR);
-            TextView textView = (TextView) view.findViewById(R.id.headerAuthorName);
-            textView.setText(author);
             getActivity().setTitle(author);
         }
     }
