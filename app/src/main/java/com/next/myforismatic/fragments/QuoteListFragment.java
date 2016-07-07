@@ -42,16 +42,12 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import android.support.v7.widget.Toolbar;
-import android.widget.TextView;
 
 /**
  * @author Konstantin Abramov on 20.03.16.
  */
 public class QuoteListFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
-
-    public static final String TAG = AuthorQuoteListFragment.class.getSimpleName();
 
     private final int QUOTES_SIZE_FIRST_RUN = 10;
     private final int QUOTES_SIZE = 100;
@@ -91,26 +87,8 @@ public class QuoteListFragment extends BaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new QuoteListAdapter();
+        adapter = QuoteListAdapter.getInstance(getFragmentManager());
         recyclerView.setAdapter(adapter);
-
-        recyclerView.setOnClickListener(item -> {
-            switch (item.getId()) {
-                case R.id.author:
-                    TextView textView = (TextView) item.findViewById(R.id.author);
-
-                    AuthorQuoteListFragment fragment = new AuthorQuoteListFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("author", textView.getText().toString());
-                    getFragmentManager()
-                            .beginTransaction()
-                            .addToBackStack(TAG)
-                            .replace(R.id.main_container, fragment, TAG)
-                            .commit();
-
-                    break;
-            }
-        });
     }
 
     @Override
@@ -128,7 +106,13 @@ public class QuoteListFragment extends BaseFragment
             }
         }, 500);
 
-        retrieveQuotes();
+        LoaderManager loaderManager = getActivity().getSupportLoaderManager();
+
+        if (loaderManager.getLoader(R.id.quote_cursor_loader) == null) {
+            retrieveQuotes();
+        } else {
+            restartLoader();
+        }
     }
 
     @Override
@@ -159,7 +143,7 @@ public class QuoteListFragment extends BaseFragment
         if (!swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(true);
         }
-        getLoaderManager().restartLoader(R.id.quote_cursor_loader, null, this);
+        getActivity().getSupportLoaderManager().restartLoader(R.id.quote_cursor_loader, null, this);
     }
 
     private void retrieveQuotes() {
@@ -236,10 +220,6 @@ public class QuoteListFragment extends BaseFragment
     private void setQuotes(@NonNull List<Quote> quotes) {
         swipeRefreshLayout.setRefreshing(false);
         adapter.setQuotes(quotes);
-    }
-
-    public QuoteListAdapter getAdapter() {
-        return adapter;
     }
 
     @Override

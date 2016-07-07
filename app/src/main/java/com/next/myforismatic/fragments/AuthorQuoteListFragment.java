@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.next.myforismatic.R;
 import com.next.myforismatic.adapters.QuoteListAdapter;
@@ -45,24 +46,23 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new QuoteListAdapter();
+        adapter = QuoteListAdapter.getInstance(null);
         recyclerView.setAdapter(adapter);
 
         Bundle bundle = this.getArguments();
 
         if (bundle != null) {
             author = bundle.getString("author");
+            TextView textView = (TextView) view.findViewById(R.id.headerAuthorName);
+            textView.setText(author);
+            getActivity().setTitle(author);
         }
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        retrieveQuotes();
-    }
-
-    private void retrieveQuotes() {
-        getActivity().getSupportLoaderManager().initLoader(R.id.quote_cursor_loader, null, this).forceLoad();
+        getLoaderManager().restartLoader(R.id.quote_cursor_loader, null, this);
     }
 
     @Override
@@ -96,13 +96,15 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
         public MyCursorLoader(Context context, Uri uri, String author) {
             super(context);
             this.uri = uri;
-            this.author = author;
+
+            //this.author = author.replaceAll("Аноним \u00a9", "");
+            this.author = author.replaceAll(" \u00a9", "");
         }
 
         @Override
         public Cursor loadInBackground() {
             return getContext().getContentResolver().query(
-                    uri, null, "author", new String[] {author},
+                    uri, null, QuoteContentProvider.QUOTE_AUTHOR, new String[] { "" + author + ""},
                     QuoteContentProvider.QUOTE_ID
             );
         }

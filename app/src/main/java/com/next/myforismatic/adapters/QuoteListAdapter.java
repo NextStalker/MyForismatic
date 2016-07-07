@@ -1,6 +1,8 @@
 package com.next.myforismatic.adapters;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.next.myforismatic.R;
+import com.next.myforismatic.fragments.AuthorQuoteListFragment;
 import com.next.myforismatic.models.Quote;
 
 import java.util.Collections;
@@ -18,8 +21,26 @@ import java.util.List;
  */
 public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.ViewHolder> {
 
+    public static final String TAG = AuthorQuoteListFragment.class.getSimpleName();
+
     @NonNull
     private List<Quote> quotes = Collections.emptyList();
+
+    private FragmentManager fragmentManager;
+
+    private static QuoteListAdapter _uniqueInstance;
+
+    private QuoteListAdapter(FragmentManager fragmentManager){
+        this.fragmentManager = fragmentManager;
+    }
+
+    public static QuoteListAdapter getInstance(FragmentManager fragmentManager) {
+        if (_uniqueInstance == null) {
+            _uniqueInstance = new QuoteListAdapter(fragmentManager);
+        }
+
+        return _uniqueInstance;
+    }
 
     public void setQuotes(@NonNull List<Quote> quotes) {
         this.quotes = quotes;
@@ -28,11 +49,30 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        return new ViewHolder(
-                LayoutInflater.from(viewGroup.getContext()).inflate(
-                        R.layout.view_qoute_item, viewGroup, false
-                )
-        );
+
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(
+                R.layout.view_quote_item, viewGroup, false);
+
+        ViewHolder.IMyViewHolderClicks myViewHolderClicks = new ViewHolder.IMyViewHolderClicks() {
+            @Override
+            public void onAuthorClick(View view) {
+                TextView textView = (TextView) view.findViewById(R.id.author);
+
+                Bundle bundle = new Bundle();
+                bundle.putString("author", textView.getText().toString());
+                AuthorQuoteListFragment fragment = new AuthorQuoteListFragment();
+                fragment.setArguments(bundle);
+                if (fragmentManager != null) {
+                    fragmentManager
+                            .beginTransaction()
+                            .addToBackStack(TAG)
+                            .replace(R.id.main_container, fragment, TAG)
+                            .commit();
+                }
+            }
+        };
+
+        return new ViewHolder(v, myViewHolderClicks);
     }
 
     @Override
@@ -51,17 +91,28 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
         return quotes.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView quote;
         private TextView author;
+        private IMyViewHolderClicks listener;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view, IMyViewHolderClicks listener) {
             super(view);
+            this.listener = listener;
             quote = (TextView) itemView.findViewById(R.id.quote);
             author = (TextView) itemView.findViewById(R.id.author);
+            author.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+            listener.onAuthorClick(v);
+        }
+
+        public interface IMyViewHolderClicks {
+            void onAuthorClick(View view);
+        }
     }
 
 }

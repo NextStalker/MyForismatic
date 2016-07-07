@@ -26,7 +26,7 @@ public class QuoteContentProvider extends ContentProvider {
 
     public static final String QUOTE_ID = "_id";
     private static final String QUOTE_TEXT = "text";
-    private static final String QUOTE_AUTHOR = "author";
+    public static final String QUOTE_AUTHOR = "author";
     private static final String QUOTE_NAME = "name";
     private static final String QUOTE_SENDER_LINK = "senderLink";
     private static final String QUOTE_QUOTE_LINK = "quoteLink";
@@ -76,6 +76,9 @@ public class QuoteContentProvider extends ContentProvider {
 
         switch (uriMatcher.match(uri)) {
             case URI_QUOTES:
+                if (!TextUtils.isEmpty(selection)) {
+                    selection = QUOTE_AUTHOR + " = ?";
+                }
                 break;
             case URI_QUOTES_ID:
                 String id = uri.getLastPathSegment();
