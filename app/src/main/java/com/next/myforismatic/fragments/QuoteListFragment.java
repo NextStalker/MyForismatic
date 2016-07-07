@@ -109,7 +109,6 @@ public class QuoteListFragment extends BaseFragment
         }, 500);
 
         LoaderManager loaderManager = getActivity().getSupportLoaderManager();
-
         if (loaderManager.getLoader(R.id.quote_cursor_loader) == null) {
             retrieveQuotes();
         } else {
@@ -269,14 +268,12 @@ public class QuoteListFragment extends BaseFragment
             return quotes;
         }
 
-
         @Override
         protected void onPostExecute(List<Quote> quotes) {
             if (isAdded()) {
                 setQuotes(quotes);
             }
         }
-
     }
 
     private static class MyCursorLoader extends CursorLoader {
