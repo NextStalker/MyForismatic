@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.next.myforismatic.R;
 import com.next.myforismatic.fragments.AuthorQuoteListFragment;
 import com.next.myforismatic.models.Quote;
+import com.next.myforismatic.providers.QuoteContentProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,22 +54,19 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(
                 R.layout.view_quote_item, viewGroup, false);
 
-        ViewHolder.IMyViewHolderClicks myViewHolderClicks = new ViewHolder.IMyViewHolderClicks() {
-            @Override
-            public void onAuthorClick(View view) {
-                TextView textView = (TextView) view.findViewById(R.id.author);
+        ViewHolder.IMyViewHolderClicks myViewHolderClicks = view -> {
+            TextView textView = (TextView) view.findViewById(R.id.author);
 
-                Bundle bundle = new Bundle();
-                bundle.putString("author", textView.getText().toString());
-                AuthorQuoteListFragment fragment = new AuthorQuoteListFragment();
-                fragment.setArguments(bundle);
-                if (fragmentManager != null) {
-                    fragmentManager
-                            .beginTransaction()
-                            .addToBackStack(TAG)
-                            .replace(R.id.main_container, fragment, TAG)
-                            .commit();
-                }
+            Bundle bundle = new Bundle();
+            bundle.putString(QuoteContentProvider.QUOTE_AUTHOR, textView.getText().toString());
+            AuthorQuoteListFragment fragment = new AuthorQuoteListFragment();
+            fragment.setArguments(bundle);
+            if (fragmentManager != null) {
+                fragmentManager
+                        .beginTransaction()
+                        .addToBackStack(TAG)
+                        .replace(R.id.main_container, fragment, TAG)
+                        .commit();
             }
         };
 

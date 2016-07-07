@@ -52,7 +52,7 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
         Bundle bundle = this.getArguments();
 
         if (bundle != null) {
-            author = bundle.getString("author");
+            author = bundle.getString(QuoteContentProvider.QUOTE_AUTHOR);
             TextView textView = (TextView) view.findViewById(R.id.headerAuthorName);
             textView.setText(author);
             getActivity().setTitle(author);
@@ -96,15 +96,13 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
         public MyCursorLoader(Context context, Uri uri, String author) {
             super(context);
             this.uri = uri;
-
-            //this.author = author.replaceAll("Аноним \u00a9", "");
             this.author = author.replaceAll(" \u00a9", "");
         }
 
         @Override
         public Cursor loadInBackground() {
             return getContext().getContentResolver().query(
-                    uri, null, QuoteContentProvider.QUOTE_AUTHOR, new String[] { "" + author + ""},
+                    uri, null, QuoteContentProvider.QUOTE_AUTHOR, new String[] { author },
                     QuoteContentProvider.QUOTE_ID
             );
         }
