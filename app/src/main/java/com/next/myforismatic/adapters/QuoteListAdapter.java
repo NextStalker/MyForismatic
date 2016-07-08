@@ -32,13 +32,21 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
     private FragmentManager fragmentManager;
     private Context context;
 
-    private static QuoteListAdapter _uniqueInstance;
+    //private static QuoteListAdapter _uniqueInstance;
 
-    private QuoteListAdapter(FragmentManager fragmentManager, Context context){
+    public QuoteListAdapter(FragmentManager fragmentManager, Context context){
+        init(fragmentManager, context);
+    }
+
+    public QuoteListAdapter(){
+        init(null, null);
+    }
+
+    private void init(FragmentManager fragmentManager, Context context) {
         this.fragmentManager = fragmentManager;
         this.context = context;
     }
-
+/*
     public static QuoteListAdapter getInstance(FragmentManager fragmentManager, Context context) {
         if (_uniqueInstance == null) {
             _uniqueInstance = new QuoteListAdapter(fragmentManager, context);
@@ -50,7 +58,7 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
     public static QuoteListAdapter getInstance() {
         return getInstance(null, null);
     }
-
+*/
     public void setQuotes(@NonNull List<Quote> quotes) {
         this.quotes = quotes;
         notifyDataSetChanged();
@@ -63,11 +71,13 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
                 R.layout.view_quote_item, viewGroup, false);
 
         ViewHolder.IMyViewHolderClicks myViewHolderClicks = view -> {
-            TextView textView = (TextView) view.findViewById(R.id.author);
 
             if (context == null) {
                 return;
             }
+
+            TextView textView = (TextView) view.findViewById(R.id.author);
+
             Intent intent = new Intent(context, AuthorQuoteListActivity.class);
             intent.putExtra(QuoteContentProvider.QUOTE_AUTHOR, textView.getText().toString());
             context.startActivity(intent);
