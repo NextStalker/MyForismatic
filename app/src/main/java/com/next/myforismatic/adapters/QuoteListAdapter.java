@@ -47,6 +47,10 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
         return _uniqueInstance;
     }
 
+    public static QuoteListAdapter getInstance() {
+        return getInstance(null, null);
+    }
+
     public void setQuotes(@NonNull List<Quote> quotes) {
         this.quotes = quotes;
         notifyDataSetChanged();

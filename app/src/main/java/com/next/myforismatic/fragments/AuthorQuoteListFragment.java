@@ -1,6 +1,5 @@
 package com.next.myforismatic.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -59,7 +58,7 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = QuoteListAdapter.getInstance(null);
+        adapter = QuoteListAdapter.getInstance();
         recyclerView.setAdapter(adapter);
 
         Bundle bundle = this.getArguments();
