@@ -1,5 +1,6 @@
 package com.next.myforismatic.adapters;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.next.myforismatic.AuthorQuoteListActivity;
 import com.next.myforismatic.R;
 import com.next.myforismatic.fragments.AuthorQuoteListFragment;
 import com.next.myforismatic.models.Quote;
@@ -16,6 +18,8 @@ import com.next.myforismatic.providers.QuoteContentProvider;
 
 import java.util.Collections;
 import java.util.List;
+
+import static android.support.v4.app.ActivityCompat.startActivity;
 
 /**
  * Created by maslparu on 18.03.2016.
@@ -59,15 +63,8 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
 
             Bundle bundle = new Bundle();
             bundle.putString(QuoteContentProvider.QUOTE_AUTHOR, textView.getText().toString());
-            AuthorQuoteListFragment fragment = new AuthorQuoteListFragment();
-            fragment.setArguments(bundle);
-            if (fragmentManager != null) {
-                fragmentManager
-                        .beginTransaction()
-                        .addToBackStack(TAG)
-                        .replace(R.id.main_container, fragment, TAG)
-                        .commit();
-            }
+            Intent intent = new Intent();
+            startActivity(new AuthorQuoteListActivity(), intent, bundle);
         };
 
         return new ViewHolder(v, myViewHolderClicks);
