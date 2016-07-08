@@ -1,7 +1,7 @@
 package com.next.myforismatic.adapters;
 
+import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,8 +19,6 @@ import com.next.myforismatic.providers.QuoteContentProvider;
 import java.util.Collections;
 import java.util.List;
 
-import static android.support.v4.app.ActivityCompat.startActivity;
-
 /**
  * Created by maslparu on 18.03.2016.
  */
@@ -32,16 +30,18 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
     private List<Quote> quotes = Collections.emptyList();
 
     private FragmentManager fragmentManager;
+    private Context context;
 
     private static QuoteListAdapter _uniqueInstance;
 
-    private QuoteListAdapter(FragmentManager fragmentManager){
+    private QuoteListAdapter(FragmentManager fragmentManager, Context context){
         this.fragmentManager = fragmentManager;
+        this.context = context;
     }
 
-    public static QuoteListAdapter getInstance(FragmentManager fragmentManager) {
+    public static QuoteListAdapter getInstance(FragmentManager fragmentManager, Context context) {
         if (_uniqueInstance == null) {
-            _uniqueInstance = new QuoteListAdapter(fragmentManager);
+            _uniqueInstance = new QuoteListAdapter(fragmentManager, context);
         }
 
         return _uniqueInstance;
@@ -61,10 +61,9 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
         ViewHolder.IMyViewHolderClicks myViewHolderClicks = view -> {
             TextView textView = (TextView) view.findViewById(R.id.author);
 
-            Bundle bundle = new Bundle();
-            bundle.putString(QuoteContentProvider.QUOTE_AUTHOR, textView.getText().toString());
-            Intent intent = new Intent();
-            startActivity(new AuthorQuoteListActivity(), intent, bundle);
+            Intent intent = new Intent(context, AuthorQuoteListActivity.class);
+            intent.putExtra(QuoteContentProvider.QUOTE_AUTHOR, textView.getText().toString());
+            context.startActivity(intent);
         };
 
         return new ViewHolder(v, myViewHolderClicks);
