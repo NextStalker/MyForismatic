@@ -87,7 +87,7 @@ public class QuoteListFragment extends BaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new QuoteListAdapter(getFragmentManager(), getActivity());
+        adapter = new QuoteListAdapter(getActivity());
         recyclerView.setAdapter(adapter);
 
         getActivity().setTitle(R.string.app_name);

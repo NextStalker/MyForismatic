@@ -3,7 +3,6 @@ package com.next.myforismatic.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,19 +25,17 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
     @NonNull
     private List<Quote> quotes = Collections.emptyList();
 
-    private FragmentManager fragmentManager;
     private Context context;
 
-    public QuoteListAdapter(FragmentManager fragmentManager, Context context){
-        init(fragmentManager, context);
+    public QuoteListAdapter(Context context){
+        init(context);
     }
 
     public QuoteListAdapter(){
-        init(null, null);
+        init(null);
     }
 
-    private void init(FragmentManager fragmentManager, Context context) {
-        this.fragmentManager = fragmentManager;
+    private void init(Context context) {
         this.context = context;
     }
 
@@ -55,12 +52,9 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
 
         ViewHolder.IMyViewHolderClicks myViewHolderClicks = view -> {
 
-            if (context == null) {
-                return;
-            }
+            if (context == null) { return; }
 
             TextView textView = (TextView) view.findViewById(R.id.author);
-
             Intent intent = new Intent(context, AuthorQuoteListActivity.class);
             intent.putExtra(QuoteContentProvider.QUOTE_AUTHOR, textView.getText().toString());
             context.startActivity(intent);
