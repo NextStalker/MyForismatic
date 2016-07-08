@@ -1,11 +1,11 @@
-package com.next.myforismatic;
+package com.next.myforismatic.ui.authorquoteslist;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.next.myforismatic.fragments.AuthorQuoteListFragment;
+import com.next.myforismatic.R;
 import com.next.myforismatic.providers.QuoteContentProvider;
 
 /**

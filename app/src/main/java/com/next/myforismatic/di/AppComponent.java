@@ -1,6 +1,6 @@
 package com.next.myforismatic.di;
 
-import com.next.myforismatic.fragments.BaseFragment;
+import com.next.myforismatic.ui.base.BaseFragment;
 import com.next.myforismatic.services.ForismaticIntentService;
 
 import javax.inject.Singleton;

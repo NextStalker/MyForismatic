@@ -1,4 +1,4 @@
-package com.next.myforismatic.common;
+package com.next.myforismatic.utils;
 
 import android.database.Cursor;
 

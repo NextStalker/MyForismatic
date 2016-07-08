@@ -19,15 +19,15 @@
         android:theme="@style/AppTheme"
         android:name=".ForismaticApplication">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".AuthorQuoteListActivity" />
+        <activity android:name=".ui.settings.SettingsActivity" />
+        <activity android:name=".ui.authorquoteslist.AuthorQuoteListActivity" />
 
         <provider
             android:name=".providers.QuoteContentProvider"

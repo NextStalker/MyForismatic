@@ -1,4 +1,4 @@
-package com.next.myforismatic.fragments;
+package com.next.myforismatic.ui.settings;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.next.myforismatic.R;
+import com.next.myforismatic.ui.base.BaseFragment;
 
 /**
  * Created by maslparu on 22.06.2016.

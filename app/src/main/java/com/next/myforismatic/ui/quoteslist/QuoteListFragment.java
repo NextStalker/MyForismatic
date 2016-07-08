@@ -1,4 +1,4 @@
-package com.next.myforismatic.fragments;
+package com.next.myforismatic.ui.quoteslist;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -27,11 +27,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.next.myforismatic.R;
-import com.next.myforismatic.adapters.QuoteListAdapter;
-import com.next.myforismatic.common.CursorParse;
+import com.next.myforismatic.ui.common.QuoteListAdapter;
+import com.next.myforismatic.utils.CursorParse;
 import com.next.myforismatic.models.Quote;
 import com.next.myforismatic.providers.QuoteContentProvider;
 import com.next.myforismatic.services.ForismaticIntentService;
+import com.next.myforismatic.ui.base.BaseFragment;
 
 import java.io.IOException;
 import java.util.ArrayList;

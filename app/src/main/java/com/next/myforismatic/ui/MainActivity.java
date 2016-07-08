@@ -1,4 +1,4 @@
-package com.next.myforismatic;
+package com.next.myforismatic.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.next.myforismatic.fragments.QuoteListFragment;
+import com.next.myforismatic.R;
+import com.next.myforismatic.ui.settings.SettingsActivity;
+import com.next.myforismatic.ui.quoteslist.QuoteListFragment;
 
 public class MainActivity extends AppCompatActivity {
 

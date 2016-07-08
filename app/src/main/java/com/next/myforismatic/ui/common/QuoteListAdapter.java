@@ -1,4 +1,4 @@
-package com.next.myforismatic.adapters;
+package com.next.myforismatic.ui.common;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.next.myforismatic.AuthorQuoteListActivity;
+import com.next.myforismatic.ui.authorquoteslist.AuthorQuoteListActivity;
 import com.next.myforismatic.R;
 import com.next.myforismatic.models.Quote;
 import com.next.myforismatic.providers.QuoteContentProvider;
