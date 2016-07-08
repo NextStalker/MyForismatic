@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.next.myforismatic.AuthorQuoteListActivity;
 import com.next.myforismatic.R;
-import com.next.myforismatic.fragments.AuthorQuoteListFragment;
 import com.next.myforismatic.models.Quote;
 import com.next.myforismatic.providers.QuoteContentProvider;
 
@@ -24,15 +23,11 @@ import java.util.List;
  */
 public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.ViewHolder> {
 
-    public static final String TAG = AuthorQuoteListFragment.class.getSimpleName();
-
     @NonNull
     private List<Quote> quotes = Collections.emptyList();
 
     private FragmentManager fragmentManager;
     private Context context;
-
-    //private static QuoteListAdapter _uniqueInstance;
 
     public QuoteListAdapter(FragmentManager fragmentManager, Context context){
         init(fragmentManager, context);
@@ -46,19 +41,7 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
         this.fragmentManager = fragmentManager;
         this.context = context;
     }
-/*
-    public static QuoteListAdapter getInstance(FragmentManager fragmentManager, Context context) {
-        if (_uniqueInstance == null) {
-            _uniqueInstance = new QuoteListAdapter(fragmentManager, context);
-        }
 
-        return _uniqueInstance;
-    }
-
-    public static QuoteListAdapter getInstance() {
-        return getInstance(null, null);
-    }
-*/
     public void setQuotes(@NonNull List<Quote> quotes) {
         this.quotes = quotes;
         notifyDataSetChanged();
