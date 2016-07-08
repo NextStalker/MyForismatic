@@ -65,6 +65,9 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
         ViewHolder.IMyViewHolderClicks myViewHolderClicks = view -> {
             TextView textView = (TextView) view.findViewById(R.id.author);
 
+            if (context == null) {
+                return;
+            }
             Intent intent = new Intent(context, AuthorQuoteListActivity.class);
             intent.putExtra(QuoteContentProvider.QUOTE_AUTHOR, textView.getText().toString());
             context.startActivity(intent);
