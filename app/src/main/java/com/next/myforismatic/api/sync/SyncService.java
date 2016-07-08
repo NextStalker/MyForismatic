@@ -17,7 +17,7 @@ public class SyncService extends Service {
     public void onCreate() {
         synchronized (syncAdapterLock) {
             if (syncAdapter == null) {
-                syncAdapter = new SyncAdapter(getApplicationContext());
+                syncAdapter = new SyncAdapter(getApplicationContext(), true);
             }
         }
     }
