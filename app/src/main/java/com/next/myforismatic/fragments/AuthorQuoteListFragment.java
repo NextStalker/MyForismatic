@@ -59,6 +59,7 @@ public class AuthorQuoteListFragment extends BaseFragment implements LoaderManag
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new QuoteListAdapter();
+        adapter.setAuthorQuotes(true);
         recyclerView.setAdapter(adapter);
 
         Bundle bundle = this.getArguments();

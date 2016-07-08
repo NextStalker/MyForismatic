@@ -2,9 +2,9 @@ package com.next.myforismatic;
 
 import android.app.Application;
 
-import com.next.myforismatic.components.AppComponent;
-import com.next.myforismatic.components.DaggerAppComponent;
-import com.next.myforismatic.modules.AppModule;
+import com.next.myforismatic.di.AppComponent;
+import com.next.myforismatic.di.DaggerAppComponent;
+import com.next.myforismatic.di.AppModule;
 
 /**
  * Created by Next on 07.04.2016.

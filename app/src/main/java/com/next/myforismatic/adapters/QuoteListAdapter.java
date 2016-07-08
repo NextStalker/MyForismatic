@@ -22,56 +22,32 @@ import java.util.List;
  */
 public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.ViewHolder> {
 
+    private boolean isAuthorQuotes;
+
     @NonNull
     private List<Quote> quotes = Collections.emptyList();
-
-    private Context context;
-
-    public QuoteListAdapter(Context context){
-        init(context);
-    }
-
-    public QuoteListAdapter(){
-        init(null);
-    }
-
-    private void init(Context context) {
-        this.context = context;
-    }
 
     public void setQuotes(@NonNull List<Quote> quotes) {
         this.quotes = quotes;
         notifyDataSetChanged();
     }
 
+    public void setAuthorQuotes(boolean authorQuotes) {
+        isAuthorQuotes = authorQuotes;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(
-                R.layout.view_quote_item, viewGroup, false);
-
-        ViewHolder.IMyViewHolderClicks myViewHolderClicks = view -> {
-
-            if (context == null) { return; }
-
-            TextView textView = (TextView) view.findViewById(R.id.author);
-            Intent intent = new Intent(context, AuthorQuoteListActivity.class);
-            intent.putExtra(QuoteContentProvider.QUOTE_AUTHOR, textView.getText().toString());
-            context.startActivity(intent);
-        };
-
-        return new ViewHolder(v, myViewHolderClicks);
+        return new ViewHolder(
+                LayoutInflater.from(viewGroup.getContext())
+                        .inflate(R.layout.view_quote_item, viewGroup, false),
+                isAuthorQuotes
+        );
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        viewHolder.quote.setText(quotes.get(position).getText());
-        viewHolder.author.setText(
-                viewHolder.itemView.getContext().getString(
-                        R.string.author_format,
-                        quotes.get(position).getAuthor()
-                )
-        );
+        viewHolder.bind(getItem(position));
     }
 
     @Override
@@ -79,28 +55,48 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
         return quotes.size();
     }
 
+    @NonNull
+    private Quote getItem(int position) {
+        return quotes.get(position);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private TextView quote;
-        private TextView author;
-        private IMyViewHolderClicks listener;
+        private final TextView quoteText;
+        private final TextView authorText;
+        private final boolean isAuthorQuotes;
 
-        public ViewHolder(View view, IMyViewHolderClicks listener) {
-            super(view);
-            this.listener = listener;
-            quote = (TextView) itemView.findViewById(R.id.quote);
-            author = (TextView) itemView.findViewById(R.id.author);
-            author.setOnClickListener(this);
+        private String authorName;
+
+        public ViewHolder(@NonNull View itemView, boolean authorQuotes) {
+            super(itemView);
+            isAuthorQuotes = authorQuotes;
+            quoteText = (TextView) itemView.findViewById(R.id.quote);
+            authorText = (TextView) itemView.findViewById(R.id.author);
+        }
+
+        public void bind(@NonNull Quote quote) {
+            authorName = quote.getAuthor();
+            if (!isAuthorQuotes) {
+                itemView.setOnClickListener(this);
+            }
+            quoteText.setText(quote.getText());
+            authorText.setText(
+                    itemView.getContext().getString(
+                            R.string.author_format,
+                            quote.getAuthor()
+                    )
+            );
         }
 
         @Override
         public void onClick(View v) {
-            listener.onAuthorClick(v);
+            Context context = itemView.getContext();
+            Intent intent = new Intent(context, AuthorQuoteListActivity.class);
+            intent.putExtra(QuoteContentProvider.QUOTE_AUTHOR, authorName);
+            context.startActivity(intent);
         }
 
-        public interface IMyViewHolderClicks {
-            void onAuthorClick(View view);
-        }
     }
 
 }

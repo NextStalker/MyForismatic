@@ -1,4 +1,4 @@
-package com.next.myforismatic.modules;
+package com.next.myforismatic.di;
 
 import android.support.annotation.NonNull;
 
