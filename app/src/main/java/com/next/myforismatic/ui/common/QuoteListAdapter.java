@@ -28,7 +28,13 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
     private List<Quote> quotes = Collections.emptyList();
 
     public void setQuotes(@NonNull List<Quote> quotes) {
+
+        if (getItemCount() != 0) {
+            quotes.addAll(this.quotes);
+        }
+
         this.quotes = quotes;
+
         notifyDataSetChanged();
     }
 
@@ -51,9 +57,7 @@ public class QuoteListAdapter extends RecyclerView.Adapter<QuoteListAdapter.View
     }
 
     @Override
-    public int getItemCount() {
-        return quotes.size();
-    }
+    public int getItemCount() { return (quotes == null) ? 0 : quotes.size(); }
 
     @NonNull
     private Quote getItem(int position) {

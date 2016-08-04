@@ -23,7 +23,7 @@ public class BaseFragment extends Fragment {
         ForismaticApplication.getComponent().inject(this);
     }
 
-    protected ForismaticService getForismaticService() {
+    public ForismaticService getForismaticService() {
         return forismaticService;
     }
 
