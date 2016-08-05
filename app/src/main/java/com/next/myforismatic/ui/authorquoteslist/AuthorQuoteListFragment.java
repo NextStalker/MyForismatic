@@ -22,7 +22,6 @@ import java.util.List;
  */
 public class AuthorQuoteListFragment extends BaseFragment implements QuoteListContract.QuoteListView {
 
-    private String author;
     private QuoteListContract.Presenter presenter;
 
     @Override
@@ -42,9 +41,14 @@ public class AuthorQuoteListFragment extends BaseFragment implements QuoteListCo
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_author_quote_list, container, false);
 
-        presenter.viewCreated(this);
-
         return v;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        presenter.viewCreated(this);
     }
 
     @Override

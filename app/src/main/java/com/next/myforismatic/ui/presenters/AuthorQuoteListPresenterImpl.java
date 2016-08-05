@@ -1,6 +1,5 @@
 package com.next.myforismatic.ui.presenters;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import com.next.myforismatic.R;
 import com.next.myforismatic.models.Quote;
 import com.next.myforismatic.providers.QuoteContentProvider;
+import com.next.myforismatic.ui.authorquoteslist.AuthorQuoteListFragment;
 import com.next.myforismatic.ui.common.QuoteListAdapter;
 import com.next.myforismatic.ui.contracts.QuoteListContract;
 import com.next.myforismatic.utils.CursorParse;
@@ -24,7 +24,7 @@ import rx.schedulers.Schedulers;
  */
 public class AuthorQuoteListPresenterImpl implements QuoteListContract.Presenter {
 
-    private Fragment fragment;
+    private AuthorQuoteListFragment fragment;
 
     private Subscription subscription;
     private RecyclerView recyclerView;
@@ -34,7 +34,7 @@ public class AuthorQuoteListPresenterImpl implements QuoteListContract.Presenter
 
     @Override
     public void viewCreated(QuoteListContract.QuoteListView view) {
-        fragment = (Fragment) view;
+        fragment = (AuthorQuoteListFragment) view;
 
         Bundle bundle = fragment.getArguments();
 
@@ -48,6 +48,8 @@ public class AuthorQuoteListPresenterImpl implements QuoteListContract.Presenter
         adapter = new QuoteListAdapter();
         adapter.setAuthorQuotes(true);
         recyclerView.setAdapter(adapter);
+
+        loadData();
     }
 
     @Override
